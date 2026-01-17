@@ -14,6 +14,7 @@ class Student extends Model
         'foto',
         'jurusan',
         'class_level',
+        'class_level_id',
     ];
 
     protected $casts = [
@@ -21,11 +22,18 @@ class Student extends Model
         'updated_at' => 'datetime',
     ];
 
-    /**
-     * Get the user that owns this student
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function departments()
+    {
+        return $this->belongsToMany(Department::class);
+    }
+
+    public function student_class(): BelongsTo
+    {
+        return $this->belongsTo(StudentClass::class, 'class_level_id');
     }
 }

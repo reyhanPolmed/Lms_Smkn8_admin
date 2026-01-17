@@ -21,6 +21,7 @@ class User extends Authenticatable
     protected $fillable = [
         'identifier', // nip (nomor induk pegawai)
         'name',
+        'email',
         'password',
     ];
 
