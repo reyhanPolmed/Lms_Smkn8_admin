@@ -1,4 +1,4 @@
-<x-filament::page>
+    <x-filament::page>
 
     {{-- ================= HEADER ================= --}}
     <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-6">
@@ -81,12 +81,7 @@
 
             {{-- Top --}}
             <div class="flex justify-between items-start mb-4">
-                <img src="{{ url('/file/' . $dept->foto) }}" class="w-8 h-8 rounded-full object-cover">
-
-                <x-filament::icon-button
-                    icon="heroicon-m-ellipsis-vertical"
-                    color="gray"
-                    size="sm" />
+                <img src="{{ url('/file/' . $dept->foto) }}" class="w-[250px] h-[150px] rounded-sm object-cover">
             </div>
 
             {{-- Title --}}
@@ -102,7 +97,7 @@
                     Head of Department
                 </p>
                 <div class="flex gap-4">
-                    <img src="{{ $dept->headOfDepartment?->foto }}" class="w-8 h-8 rounded-full object-cover">
+                    <img src="{{ $dept->headOfDepartment?->foto ? url('/file/' . $dept->headOfDepartment->foto) : '/placeholder.svg' }}" class="w-8 h-8 rounded-full object-cover">
                     <p class="text-sm font-medium text-gray-900 dark:text-white">
                         {{ $dept->headOfDepartment?->name ?? 'Not Assigned' }}
                     </p>
