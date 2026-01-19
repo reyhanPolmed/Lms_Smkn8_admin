@@ -9,6 +9,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
+use Filament\Notifications\Notification;
 use App\Models\Teacher;
 use UnitEnum;
 use BackedEnum;
@@ -19,12 +20,14 @@ class ViewDepartments extends Page
 {
     protected string $view = 'filament.pages.view-departments';
 
-    protected static ?string $navigationLabel = 'Struktur Institusi';
+    protected static ?string $navigationLabel = 'Mata Pelajaran';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice;
     // protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Institusi';
+
+    public $selectedDepartment;
+
 
     public function getDepartments()
     {
@@ -77,5 +80,27 @@ class ViewDepartments extends Page
 
                 ->successNotificationTitle('Mata Pelajaran berhasil ditambahkan'),
         ];
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->dispatch('open-modal', id: 'delete-department');
+
+        $this->selectedDepartment = $id;
+    }
+
+    public function deleteDepartment()
+    {
+        $dept = Department::findOrFail($this->selectedDepartment);
+
+        $dept->delete();
+
+        Notification::make()
+            ->title('Department berhasil dihapus')
+            ->success()
+            ->send();
+
+
+            return redirect()->to(\App\Filament\Pages\ViewDepartments::getUrl());
     }
 }

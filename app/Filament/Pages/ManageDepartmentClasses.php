@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use App\Models\Department;
 use App\Models\StudentClass;
+use App\Models\Teacher;
 use Livewire\WithFileUploads;
 use Filament\Notifications\Notification;
 
@@ -16,6 +17,9 @@ class ManageDepartmentClasses extends Page
     public $foto;
     public $name;
     public $description;
+
+    public $teacher_id;
+    public $allTeachers;
 
     protected string $view = 'filament.pages.manage-classes';
 
@@ -36,6 +40,7 @@ class ManageDepartmentClasses extends Page
             'headOfDepartment',
             'classes.homeroomTeacher',
             'classes.students',
+            'teachers',
         ])->loadCount([
             'students',
             'teachers',
@@ -45,6 +50,8 @@ class ManageDepartmentClasses extends Page
         $this->department = $department;
 
         $this->allClasses = StudentClass::with(['homeroomTeacher', 'students'])->get();
+        $this->allTeachers = Teacher::all();
+
         $this->name = $department->name;
         $this->description = $department->description;
     }
@@ -128,4 +135,42 @@ class ManageDepartmentClasses extends Page
         // refresh data
         $this->department->refresh();
     }
+
+    public function attachTeacher()
+{
+    $this->validate([
+        'teacher_id' => 'required',
+    ]);
+
+    $this->department->teachers()
+        ->syncWithoutDetaching([$this->teacher_id]);
+
+    $this->department->refresh();
+    $this->department->load('teachers');
+
+    $this->teacher_id = null;
+
+    Notification::make()
+        ->title('Guru berhasil ditambahkan')
+        ->success()
+        ->send();
+
+    $this->dispatch('$refresh');
+}
+
+public function detachTeacher($teacherId)
+{
+    $this->department->teachers()->detach($teacherId);
+
+    $this->department->refresh();
+    $this->department->load('teachers');
+
+    Notification::make()
+        ->title('Guru dikeluarkan dari jurusan')
+        ->warning()
+        ->send();
+
+    $this->dispatch('$refresh');
+}
+
 }

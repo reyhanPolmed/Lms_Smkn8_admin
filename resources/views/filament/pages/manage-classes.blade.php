@@ -25,14 +25,14 @@
                     </h2>
                 </div>
 
-                <div class="flex flex-col gap-6 mb-4">
-                    <h3 class="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                        {{ __('Foto Kursus') }}
-                    </h3>
-                    <div class="flex items-start gap-5 p-4 border border-gray-200 rounded-xl bg-white shadow-sm">
+                <div class="flex flex-col mb-4">
+                    <div class="flex flex-col items-start gap-5 p-4 border border-gray-200 rounded-xl bg-white shadow-sm">
+                        <h3 class="text-[10px] font-semibold text-gray-600 uppercase tracking-wide">
+                            {{ __('Foto Kursus') }}
+                        </h3>
                         {{-- 1. IMAGE CONTAINER --}}
                         <div class="relative shrink-0 group">
-                            <div class="w-20 h-20 rounded-xl overflow-hidden ring-1 ring-gray-900/5 bg-gray-50 flex items-center justify-center">
+                            <div class="w-[200px] h-[160px] rounded-xl overflow-hidden ring-1 ring-gray-900/5 bg-gray-50 flex items-center justify-center">
                                 @if($record->foto)
                                 <img src="{{ url('/file/' . $record->foto) }}"
                                     class="w-full h-full object-cover border border-gray-400 rounded-xl"
@@ -54,14 +54,14 @@
                         </div>
 
                         {{-- 2. ACTION & INFO --}}
-                        <div class="flex flex-col justify-center h-20">
+                        <div class="flex flex-col justify-center">
                             <div class="flex flex-col gap-3">
                                 <input type="file"
                                     id="fotoUpload"
                                     wire:model="foto"
                                     class="hidden"
                                     accept="image/png, image/jpeg, image/jpg" />
-                                <div class="text-xs">
+                                <div class="text-[10px]">
                                     <x-filament::button
                                         size="xs"
                                         color="info"
@@ -114,6 +114,82 @@
                         </div>
 
                     </div>
+
+                    <!-- nama guru yang masuk -->
+                    <div class="flex flex-col items-start gap-5 p-4 border border-gray-200 rounded-xl bg-white shadow-sm">
+
+                        {{-- HEADER --}}
+                        <div class="flex flex-col gap-2 w-full">
+                            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
+                                {{ __('Guru yang Masuk') }}
+                            </p>
+                        </div>
+
+                        {{-- FORM TAMBAH GURU --}}
+                        <div class="flex gap-2 w-full">
+                            <select
+                                wire:model="teacher_id"
+                                class="w-full text-xs border rounded-lg px-3 py-2">
+
+                                <option value="">-- Pilih Guru --</option>
+
+                                @foreach($allTeachers as $teacher)
+                                <option value="{{ $teacher->id }}">
+                                    {{ $teacher->name }} — {{ $teacher->nip }}
+                                </option>
+                                @endforeach
+                            </select>
+
+                            <x-filament::button
+                                size="sm"
+                                color="primary"
+                                wire:click="attachTeacher">
+                                +
+                            </x-filament::button>
+                        </div>
+
+                        {{-- LIST GURU YANG SUDAH MASUK --}}
+                        <div class="w-full space-y-2">
+
+                            @forelse($department->teachers as $teacher)
+                            <div class="flex items-center justify-between p-2 border rounded-lg">
+
+                                <div class="flex items-center gap-3">
+                                    <img
+                                        src="{{ $teacher->foto ? url('/file/' . $teacher->foto) : '/placeholder.svg' }}"
+                                        class="w-8 h-8 rounded-full object-cover">
+
+                                    <div>
+                                        <p class="text-xs font-semibold">
+                                            {{ $teacher->name }}
+                                        </p>
+                                        <p class="text-[10px] text-gray-500">
+                                            NIP. {{ $teacher->nip }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <button
+                                    wire:click="detachTeacher({{ $teacher->id }})"
+                                    class="p-2 text-red-500 hover:bg-red-50 rounded-full">
+
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+
+                            </div>
+
+                            @empty
+                            <p class="text-xs text-gray-400 italic">
+                                Belum ada guru di jurusan ini
+                            </p>
+                            @endforelse
+
+                        </div>
+                    </div>
+
 
 
                     <div class="flex flex-col gap-2">
