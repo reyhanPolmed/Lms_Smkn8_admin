@@ -38,7 +38,7 @@ class StudentsTable
                     ->sortable(),
 
                 BadgeColumn::make('class_level')
-                    ->label('Kelas')
+                    ->label('Kelass')
                     ->colors([
                         'primary' => 'X',
                         'info' => 'XI',

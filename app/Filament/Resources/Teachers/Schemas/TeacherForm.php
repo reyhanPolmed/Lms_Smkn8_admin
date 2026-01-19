@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Teachers\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 
 class TeacherForm
 {
@@ -29,11 +30,17 @@ class TeacherForm
                 ->maxLength(30)
                 ->placeholder('Contoh: 1234567890'),
 
+            FileUpload::make('foto')
+                ->image()
+                ->maxFiles(1)
+                ->directory('teachers'),
+                
             TextInput::make('mapel')
                 ->label('Mata Pelajaran')
                 ->required()
                 ->maxLength(100)
                 ->placeholder('Contoh: Matematika, Bahasa Indonesia'),
+
 
             // =====================
             // AKUN LOGIN GURU
@@ -42,8 +49,8 @@ class TeacherForm
                 ->label('Password Login')
                 ->password()
                 ->revealable()
-                ->required(fn ($operation) => $operation === 'create')
-                ->hidden(fn ($operation) => $operation === 'edit')
+                ->required(fn($operation) => $operation === 'create')
+                ->hidden(fn($operation) => $operation === 'edit')
                 ->minLength(8)
                 ->maxLength(255)
                 ->placeholder('Minimal 8 karakter'),
@@ -52,15 +59,15 @@ class TeacherForm
                 ->label('Konfirmasi Password')
                 ->password()
                 ->revealable()
-                ->required(fn ($operation) => $operation === 'create')
-                ->hidden(fn ($operation) => $operation === 'edit')
+                ->required(fn($operation) => $operation === 'create')
+                ->hidden(fn($operation) => $operation === 'edit')
                 ->same('password')
                 ->placeholder('Ulangi password'),
 
             TextInput::make('user.identifier')
                 ->label('NIP (User)')
                 ->disabled()
-                ->hidden(fn ($operation) => $operation === 'create')
+                ->hidden(fn($operation) => $operation === 'create')
                 ->helperText('NIP otomatis disinkronkan dari data guru'),
         ];
     }

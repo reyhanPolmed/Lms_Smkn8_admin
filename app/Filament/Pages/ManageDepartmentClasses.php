@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
 use App\Models\Department;
+use App\Models\StudentClass;
 use Livewire\WithFileUploads;
 use Filament\Notifications\Notification;
 
@@ -13,6 +14,8 @@ class ManageDepartmentClasses extends Page
     use WithFileUploads;        // ← DAN DI AKTIFKAN DI SINI
 
     public $foto;
+    public $name;
+    public $description;
 
     protected string $view = 'filament.pages.manage-classes';
 
@@ -24,6 +27,8 @@ class ManageDepartmentClasses extends Page
     protected static bool $shouldRegisterNavigation = false;
 
     public ?Department $department = null;
+    public $allClasses;
+
 
     public function mount(Department $department): void
     {
@@ -38,6 +43,10 @@ class ManageDepartmentClasses extends Page
 
         // Masukkan ke properti public
         $this->department = $department;
+
+        $this->allClasses = StudentClass::with(['homeroomTeacher', 'students'])->get();
+        $this->name = $department->name;
+        $this->description = $department->description;
     }
 
     protected function getHeaderActions(): array
@@ -66,5 +75,57 @@ class ManageDepartmentClasses extends Page
         $this->department->refresh();
 
         $this->dispatch('$refresh');
+    }
+
+    public function attachClass($classId)
+    {
+        // Cegah double attach
+        $this->department->classes()->syncWithoutDetaching([$classId]);
+
+        $this->department->refresh();
+        $this->department->load('classes');
+
+        Notification::make()
+            ->title('Kelas berhasil ditambahkan ke jurusan')
+            ->success()
+            ->send();
+
+        $this->dispatch('$refresh');
+    }
+
+    public function detachClass($classId)
+    {
+        $this->department->classes()->detach($classId);
+
+        $this->department->refresh();
+        $this->department->load('classes');
+
+        Notification::make()
+            ->title('Kelas dikeluarkan dari jurusan')
+            ->warning()
+            ->send();
+
+        $this->dispatch('$refresh');
+    }
+
+    public function save()
+    {
+        $this->validate([
+            'name' => 'required|min:3',
+            'description' => 'nullable',
+        ]);
+
+        $this->department->update([
+            'name' => $this->name,
+            'description' => $this->description,
+        ]);
+
+        Notification::make()
+            ->title('Perubahan berhasil disimpan')
+            ->success()
+            ->send();
+
+        // refresh data
+        $this->department->refresh();
     }
 }

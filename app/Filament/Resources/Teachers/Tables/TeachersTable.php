@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Teachers\Tables;
 
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -16,6 +17,11 @@ class TeachersTable
     {
         return $table
             ->columns([
+                ImageColumn::make('foto')
+                    ->label('Foto')
+                    ->circular()
+                    ->default('/images/placeholder-student.png'),
+
                 TextColumn::make('nip')
                     ->label('NIP')
                     ->searchable()
@@ -36,7 +42,7 @@ class TeachersTable
                     ->formatStateUsing(function ($state) {
                         return $state ? 'Aktif' : 'Belum Setup';
                     })
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Aktif' => 'success',
                         'Belum Setup' => 'warning',
                         default => 'gray',

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Siswas\Schemas;
 
+use App\Models\StudentClass;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
@@ -42,15 +43,13 @@ class StudentForm
                 ])
                 ->placeholder('Pilih jurusan'),
 
-            Select::make('class_level')
-                ->label('Tingkat Kelas')
+            Select::make('class_level_id')
+                ->label('Kelas')
+                ->relationship('student_class', 'name')
+                ->searchable()
+                ->preload()
                 ->required()
-                ->options([
-                    'X' => 'Kelas X (10)',
-                    'XI' => 'Kelas XI (11)',
-                    'XII' => 'Kelas XII (12)',
-                ])
-                ->placeholder('Pilih tingkat kelas'),
+                ->placeholder('Pilih kelas'),
 
             FileUpload::make('foto')
                 ->image()

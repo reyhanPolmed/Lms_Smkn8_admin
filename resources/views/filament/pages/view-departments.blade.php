@@ -13,147 +13,146 @@
         </div>
     </div>
 
-    {{-- ================= FILTER BAR ================= --}}
-    <x-filament::card class="mb-8">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-
-            {{-- Left --}}
-            <div class="flex items-center gap-2 overflow-x-auto">
-                <x-filament::button
-                    color="primary"
-                    icon="heroicon-m-funnel"
-                    size="sm"
-                    outlined>
-                    Filter
-                </x-filament::button>
-
-                <div class="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-2 hidden md:block"></div>
-
-                <button class="px-3 py-1.5 text-lg font-semibold rounded-lg
-                    bg-primary-50 text-primary-600
-                    dark:bg-primary-900/20 dark:text-primary-400">
-                    All
-                </button>
-
-                <button class="px-3 py-1.5 text-sm font-medium rounded-lg
-                    text-gray-600 hover:bg-gray-100
-                    dark:text-gray-400 dark:hover:bg-gray-800">
-                    Technology
-                </button>
-
-                <button class="px-3 py-1.5 text-sm font-medium rounded-lg
-                    text-gray-600 hover:bg-gray-100
-                    dark:text-gray-400 dark:hover:bg-gray-800">
-                    Business
-                </button>
-
-                <button class="px-3 py-1.5 text-sm font-medium rounded-lg
-                    text-gray-600 hover:bg-gray-100
-                    dark:text-gray-400 dark:hover:bg-gray-800">
-                    Creative Arts
-                </button>
-            </div>
-
-            {{-- Right --}}
-            <x-filament::input.wrapper>
-                <x-filament::input.select class="text-sm">
-                    <option>2023/2024 Academic Year</option>
-                    <option>2024/2025 Academic Year</option>
-                </x-filament::input.select>
-            </x-filament::input.wrapper>
-        </div>
-    </x-filament::card>
 
     {{-- ================= GRID ================= --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse ($this->getDepartments() as $dept)
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @forelse ($this->getDepartments() as $dept)
 
-        @php
+    @php
         $theme = match($dept->slug) {
-        'rpl', 'software-engineering' => ['bg' => 'bg-blue-100 dark:bg-blue-900/20', 'text' => 'text-blue-600 dark:text-blue-400', 'icon' => 'heroicon-o-code-bracket'],
-        'tkj', 'network-engineering' => ['bg' => 'bg-purple-100 dark:bg-purple-900/20', 'text' => 'text-purple-600 dark:text-purple-400', 'icon' => 'heroicon-o-wifi'],
-        'ak', 'accounting' => ['bg' => 'bg-green-100 dark:bg-green-900/20', 'text' => 'text-green-600 dark:text-green-400', 'icon' => 'heroicon-o-banknotes'],
-        default => ['bg' => 'bg-gray-100 dark:bg-gray-800', 'text' => 'text-gray-600 dark:text-gray-300', 'icon' => 'heroicon-o-academic-cap'],
+            'tata-boga', 'software-engineering' => [
+                'bg' => 'bg-blue-50 dark:bg-blue-900/20',
+                'border' => 'border-blue-200 dark:border-blue-800',
+                'text' => 'text-blue-600 dark:text-blue-400',
+                'badge' => 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300',
+                'icon' => 'heroicon-o-code-bracket'
+            ],
+            'tata-kecantikan', 'network-engineering' => [
+                'bg' => 'bg-purple-50 dark:bg-purple-900/20',
+                'border' => 'border-purple-200 dark:border-purple-800',
+                'text' => 'text-purple-600 dark:text-purple-400',
+                'badge' => 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300',
+                'icon' => 'heroicon-o-wifi'
+            ],
+            'tata-busana', 'accounting' => [
+                'bg' => 'bg-green-50 dark:bg-green-900/20',
+                'border' => 'border-green-200 dark:border-green-800',
+                'text' => 'text-green-600 dark:text-green-400',
+                'badge' => 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300',
+                'icon' => 'heroicon-o-banknotes'
+            ],
+            default => [
+                'bg' => 'bg-gray-50 dark:bg-gray-800',
+                'border' => 'border-gray-200 dark:border-gray-700',
+                'text' => 'text-gray-600 dark:text-gray-400',
+                'badge' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+                'icon' => 'heroicon-o-academic-cap'
+            ],
         };
-        @endphp
+    @endphp
 
-        <x-filament::card class="flex flex-col h-full">
-
-            {{-- Top --}}
-            <div class="flex justify-between items-start mb-4">
-                <img src="{{ url('/file/' . $dept->foto) }}" class="w-[250px] h-[150px] rounded-sm object-cover">
+    {{-- Gunakan Div biasa dengan class Filament agar bisa Full Width Image --}}
+    <div class="group flex flex-col h-full bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+        
+        {{-- 1. HEADER IMAGE (Full Bleed) --}}
+        <div class="relative h-48 w-full overflow-hidden bg-gray-100">
+            <img 
+                src="{{ url('/file/' . $dept->foto) }}" 
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                alt="{{ $dept->name }}"
+            >
+            {{-- Floating Icon Badge --}}
+            <div class="absolute top-3 right-3 p-2 rounded-lg backdrop-blur-md bg-white/80 dark:bg-black/50 shadow-sm border border-white/20">
+                @svg($theme['icon'], 'w-5 h-5 ' . $theme['text'])
             </div>
+            
+            {{-- Gradient Overlay untuk teks agar terbaca (opsional) --}}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
 
-            {{-- Title --}}
-            <div class="mb-6">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+            {{-- Title di atas gambar (bawah kiri) --}}
+            <div class="absolute bottom-4 left-4 right-4">
+                <h3 class="text-xl font-bold text-white tracking-wide shadow-black drop-shadow-md">
                     {{ $dept->name }}
                 </h3>
             </div>
+        </div>
 
-            {{-- Kaprog --}}
-            <div class="mb-6">
-                <p class="text-xs font-semibold text-gray-400 uppercase mb-3">
-                    Head of Department
-                </p>
-                <div class="flex gap-4">
-                    <img src="{{ $dept->headOfDepartment?->foto ? url('/file/' . $dept->headOfDepartment->foto) : '/placeholder.svg' }}" class="w-8 h-8 rounded-full object-cover">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+        {{-- 2. CONTENT BODY --}}
+        <div class="p-5 flex flex-col flex-grow">
+            
+            {{-- Head of Department (Card Style) --}}
+            <div class="flex items-center gap-3 mb-5 p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                <img 
+                    src="{{ $dept->headOfDepartment?->foto ? url('/file/' . $dept->headOfDepartment->foto) : 'https://ui-avatars.com/api/?name=NA&background=random' }}" 
+                    class="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-700"
+                >
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Kaprog</span>
+                    <span class="text-sm font-semibold text-gray-900 dark:text-white truncate max-w-[150px]">
                         {{ $dept->headOfDepartment?->name ?? 'Not Assigned' }}
-                    </p>
-                </div>
-            </div>
-
-            {{-- Classes --}}
-            <div class="mb-6 flex-grow">
-                <p class="text-xs font-semibold text-gray-400 uppercase mb-3">
-                    Active Classes ({{ $dept->classes->count() }})
-                </p>
-                <div class="flex flex-wrap gap-2">
-                    @foreach ($dept->classes->take(5) as $class)
-                    <span class="px-2.5 py-1 text-xs rounded-md
-                                bg-gray-100 text-gray-700
-                                dark:bg-gray-800 dark:text-gray-300 border">
-                        {{ $class->name }}
                     </span>
-                    @endforeach
                 </div>
             </div>
 
-            {{-- Footer --}}
-            <div class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-800">
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <p class="text-xs text-gray-500">Students</p>
-                        <p class="text-xl font-bold text-gray-900 dark:text-white">
+            {{-- Classes List --}}
+            <div class="mb-6 flex-grow">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-semibold text-gray-500 uppercase">Active Classes</p>
+                    <span class="text-xs font-bold {{ $theme['text'] }}">{{ $dept->classes->count() }} Classes</span>
+                </div>
+                
+                <div class="flex flex-wrap gap-2">
+                    @forelse ($dept->classes->take(4) as $class)
+                        <span class="px-2 py-1 text-[10px] font-medium rounded-md border {{ $theme['border'] }} {{ $theme['badge'] }}">
+                            {{ $class->name }}
+                        </span>
+                    @empty
+                        <span class="text-xs text-gray-400 italic">No classes yet</span>
+                    @endforelse
+                    
+                    @if($dept->classes->count() > 4)
+                        <span class="px-2 py-1 text-[10px] font-medium rounded-md bg-gray-100 text-gray-500">
+                            +{{ $dept->classes->count() - 4 }}
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            {{-- 3. FOOTER STATS & ACTION --}}
+            <div class="mt-auto">
+                {{-- Stats Grid --}}
+                <div class="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700 border-t border-b border-gray-100 dark:border-gray-800 py-3 mb-4">
+                    <div class="text-center">
+                        <span class="block text-lg font-bold text-gray-900 dark:text-white">
                             {{ $dept->classes->sum(fn($class) => $class->students->count()) }}
-                        </p>
+                        </span>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-wide">Students</span>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-500">Teachers</p>
-                        <p class="text-xl font-bold text-gray-900 dark:text-white">
+                    <div class="text-center">
+                        <span class="block text-lg font-bold text-gray-900 dark:text-white">
                             {{ $dept->teachers->count() }}
-                        </p>
+                        </span>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-wide">Teachers</span>
                     </div>
                 </div>
 
                 <x-filament::button
                     tag="a"
                     color="gray"
-                    outlined
-                    class="w-full"
+                    class="w-full justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                     :href="\App\Filament\Pages\ManageDepartmentClasses::getUrl(['department' => $dept->id])">
-                    Manage Classes
+                    Manage Department
                 </x-filament::button>
             </div>
-
-        </x-filament::card>
-
-        @empty
-        <x-filament::card class="col-span-full text-center">
-            Belum ada data jurusan.
-        </x-filament::card>
-        @endforelse
+        </div>
     </div>
+
+    @empty
+    <div class="col-span-full flex flex-col items-center justify-center p-10 bg-white dark:bg-gray-900 rounded-xl border border-dashed border-gray-300">
+        <x-heroicon-o-building-office-2 class="w-12 h-12 text-gray-300 mb-2"/>
+        <p class="text-gray-500 font-medium">Belum ada data jurusan.</p>
+    </div>
+    @endforelse
+</div>
 
 </x-filament::page>
