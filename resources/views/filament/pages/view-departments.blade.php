@@ -1,242 +1,186 @@
 <x-filament::page>
 
-    {{-- ================= HEADER ================= --}}
-    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-6 -mt-17 bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-950 dark:text-white">
-                Daftar Mata Pelajaran
-            </h1>
-            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-2xl">
-                Halaman ini digunakan untuk mengelola seluruh mata pelajaran yang tersedia di sistem. Admin dapat menambahkan, mengubah, dan menghapus data mata pelajaran, menentukan guru pengampu, serta mengatur kelas yang terkait dengan setiap mata pelajaran.
-            </p>
+    {{-- ================= HEADER SECTION ================= --}}
+    <div class="relative overflow-hidden bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm mb-8">
+        {{-- Decorative Background --}}
+        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
+
+        <div class="relative z-10 p-8">
+            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+                        Daftar Jurusan
+                    </h1>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
+                        Kelola data kompetensi keahlian, pantau statistik kepala program, guru, dan kelas dalam satu tampilan terpadu.
+                    </p>
+                </div>
+                
+                {{-- Global Stat Badge (Safe Count) --}}
+                <div class="hidden md:flex flex-col items-end justify-center">
+                    <span class="text-3xl font-bold text-gray-900 dark:text-white">
+                        {{ $this->getDepartments()?->count() ?? 0 }}
+                    </span>
+                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-widest">Total Jurusan</span>
+                </div>
+            </div>
         </div>
     </div>
 
-
-    {{-- ================= GRID ================= --}}
+    {{-- ================= GRID DEPARTMENTS ================= --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse ($this->getDepartments() as $dept)
 
-        @php
-        $theme = match($dept->slug) {
-        'tata-boga', 'software-engineering' => [
-        'bg' => 'bg-blue-50 dark:bg-blue-900/20',
-        'border' => 'border-blue-200 dark:border-blue-800',
-        'text' => 'text-blue-600 dark:text-blue-400',
-        'badge' => 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300',
-        'icon' => 'heroicon-o-code-bracket'
-        ],
-        'tata-kecantikan', 'network-engineering' => [
-        'bg' => 'bg-purple-50 dark:bg-purple-900/20',
-        'border' => 'border-purple-200 dark:border-purple-800',
-        'text' => 'text-purple-600 dark:text-purple-400',
-        'badge' => 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300',
-        'icon' => 'heroicon-o-wifi'
-        ],
-        'tata-busana', 'accounting' => [
-        'bg' => 'bg-green-50 dark:bg-green-900/20',
-        'border' => 'border-green-200 dark:border-green-800',
-        'text' => 'text-green-600 dark:text-green-400',
-        'badge' => 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300',
-        'icon' => 'heroicon-o-banknotes'
-        ],
-        default => [
-        'bg' => 'bg-gray-50 dark:bg-gray-800',
-        'border' => 'border-gray-200 dark:border-gray-700',
-        'text' => 'text-gray-600 dark:text-gray-400',
-        'badge' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
-        'icon' => 'heroicon-o-academic-cap'
-        ],
-        };
-        @endphp
+            @php
+                // Safe Slug Access
+                $slug = $dept->slug ?? Str::slug($dept->name ?? 'unknown');
+                
+                $theme = match($slug) {
+                    'tata-boga', 'kuliner' => [
+                        'color' => 'orange',
+                        'border' => 'border-orange-500',
+                        'text' => 'text-orange-600',
+                        'bg_soft' => 'bg-orange-50',
+                        'icon' => 'heroicon-o-cake'
+                    ],
+                    'software-engineering', 'rpl', 'pplg' => [
+                        'color' => 'blue',
+                        'border' => 'border-blue-500',
+                        'text' => 'text-blue-600',
+                        'bg_soft' => 'bg-blue-50',
+                        'icon' => 'heroicon-o-code-bracket'
+                    ],
+                    'network-engineering', 'tjkt' => [
+                        'color' => 'purple',
+                        'border' => 'border-purple-500',
+                        'text' => 'text-purple-600',
+                        'bg_soft' => 'bg-purple-50',
+                        'icon' => 'heroicon-o-wifi'
+                    ],
+                    'tata-busana', 'busana' => [
+                        'color' => 'pink',
+                        'border' => 'border-pink-500',
+                        'text' => 'text-pink-600',
+                        'bg_soft' => 'bg-pink-50',
+                        'icon' => 'heroicon-o-scissors'
+                    ],
+                    'accounting', 'akuntansi' => [
+                        'color' => 'emerald',
+                        'border' => 'border-emerald-500',
+                        'text' => 'text-emerald-600',
+                        'bg_soft' => 'bg-emerald-50',
+                        'icon' => 'heroicon-o-calculator'
+                    ],
+                    default => [
+                        'color' => 'gray',
+                        'border' => 'border-gray-500',
+                        'text' => 'text-gray-600',
+                        'bg_soft' => 'bg-gray-50',
+                        'icon' => 'heroicon-o-academic-cap'
+                    ],
+                };
+            @endphp
 
-        {{-- Gunakan Div biasa dengan class Filament agar bisa Full Width Image --}}
-        <div class="group flex flex-col h-full bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+            <div class="group relative flex flex-col h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
 
-            {{-- 1. HEADER IMAGE (Full Bleed) --}}
-            <div class="relative h-48 w-full overflow-hidden bg-gray-100">
-                <img
-                    src="{{ url('/file/' . $dept->foto) }}"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    alt="{{ $dept->name }}">
-                {{-- Floating Icon Badge --}}
-                <div class="absolute top-3 right-3 p-2 rounded-lg backdrop-blur-md bg-white/80 dark:bg-black/50 shadow-sm border border-white/20">
-                    @svg($theme['icon'], 'w-5 h-5 ' . $theme['text'])
-                </div>
+                {{-- Top Accent Border --}}
+                <div class="absolute top-0 inset-x-0 h-1 {{ $theme['border'] }}"></div>
 
-                {{-- Gradient Overlay untuk teks agar terbaca (opsional) --}}
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
-
-                {{-- Title di atas gambar (bawah kiri) --}}
-                <div class="absolute bottom-4 left-4 right-4">
-                    <h3 class="text-xl font-bold text-white tracking-wide shadow-black drop-shadow-md">
-                        {{ $dept->name }}
-                    </h3>
-                </div>
-            </div>
-
-            {{-- 2. CONTENT BODY --}}
-            <div class="p-5 flex flex-col flex-grow">
-
-                {{-- Head of Department (Card Style) --}}
-                <div class="flex items-center gap-3 mb-5 p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                {{-- 1. HEADER IMAGE --}}
+                <div class="relative h-40 w-full overflow-hidden bg-gray-100">
                     <img
-                        src="{{ $dept->headOfDepartment?->foto ? url('/file/' . $dept->headOfDepartment->foto) : 'https://ui-avatars.com/api/?name=NA&background=random' }}"
-                        class="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-700">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Kaprog</span>
-                        <span class="text-sm font-semibold text-gray-900 dark:text-white truncate max-w-[150px]">
-                            {{ $dept->headOfDepartment?->name ?? 'Belum Ditentukan' }}
-                        </span>
+                        src="{{ $dept->foto ? url('/file/' . $dept->foto) : '/placeholder.svg' }}"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        alt="{{ $dept->name }}">
+
+                    {{-- Gradient Overlay --}}
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent"></div>
+
+                    {{-- Floating Icon --}}
+                    <div class="absolute top-3 right-3 p-2 rounded-xl backdrop-blur-md bg-white/90 dark:bg-black/50 shadow-sm ring-1 ring-white/20">
+                        @svg($theme['icon'], 'w-5 h-5 ' . $theme['text'])
+                    </div>
+
+                    {{-- Title --}}
+                    <div class="absolute bottom-4 left-5 right-5">
+                        <h3 class="text-xl font-bold text-white shadow-black drop-shadow-md leading-tight">
+                            {{ $dept->name }}
+                        </h3>
                     </div>
                 </div>
 
-                {{-- Classes List --}}
-                <div class="mb-6 flex-grow">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-xs font-semibold text-gray-500 uppercase">Kelas Aktif</p>
-                        <span class="text-xs font-bold {{ $theme['text'] }}">{{ $dept->classes->count() }} Kelas</span>
-                    </div>
-
-                    <div class="flex flex-wrap gap-2">
-                        @forelse ($dept->classes->take(4) as $class)
-                        <span class="px-2 py-1 text-[10px] font-medium rounded-md border {{ $theme['border'] }} {{ $theme['badge'] }}">
-                            {{ $class->name }}
-                        </span>
-                        @empty
-                        <span class="text-xs text-gray-400 italic">Belum ada kelas</span>
-                        @endforelse
-
-                        @if($dept->classes->count() > 4)
-                        <span class="px-2 py-1 text-[10px] font-medium rounded-md bg-gray-100 text-gray-500">
-                            +{{ $dept->classes->count() - 4 }}
-                        </span>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Teachers List --}}
-                <div class="mb-6 flex-grow">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-xs font-semibold text-gray-500 uppercase">
-                            Guru Aktif
-                        </p>
-
-                        <span class="text-xs font-bold {{ $theme['text'] }}">
-                            {{ $dept->teachers->count() }} Guru
-                        </span>
-                    </div>
-
-                    <div class="flex flex-wrap gap-2">
-
-                        @forelse ($dept->teachers->take(4) as $teacher)
-
-                        <span class="px-2 py-1 text-[10px] font-medium rounded-md border {{ $theme['border'] }} {{ $theme['badge'] }}">
-
-                            {{ $teacher->name }}
-
-                        </span>
-
-                        @empty
-                        <span class="text-xs text-gray-400 italic">
-                            Belum ada guru
-                        </span>
-                        @endforelse
-
-                        @if($dept->teachers->count() > 4)
-                        <span class="px-2 py-1 text-[10px] font-medium rounded-md bg-gray-100 text-gray-500">
-                            +{{ $dept->teachers->count() - 4 }}
-                        </span>
-                        @endif
-
-                    </div>
-                </div>
-
-
-                {{-- 3. FOOTER STATS & ACTION --}}
-                <div class="mt-auto">
-                    {{-- Stats Grid --}}
-                    <div class="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700 border-t border-b border-gray-100 dark:border-gray-800 py-3 mb-4">
-                        <div class="text-center">
-                            <span class="block text-lg font-bold text-gray-900 dark:text-white">
-                                {{ $dept->classes->sum(fn($class) => $class->students->count()) }}
-                            </span>
-                            <span class="text-[10px] text-gray-500 uppercase tracking-wide">Siswa</span>
-                        </div>
-                        <div class="text-center">
-                            <span class="block text-lg font-bold text-gray-900 dark:text-white">
-                                {{ $dept->teachers->count() }}
-                            </span>
-                            <span class="text-[10px] text-gray-500 uppercase tracking-wide">Guru</span>
+                {{-- 2. CONTENT BODY --}}
+                <div class="p-5 flex flex-col flex-grow">
+                    
+                    {{-- Head of Dept (Kaprog) Section --}}
+                    <div class="flex items-center gap-3 mb-5 pb-5 border-b border-gray-100 dark:border-gray-800">
+                        {{-- Menggunakan null coalescing operator (??) untuk fallback --}}
+                        <img src="{{ $dept->headOfDepartment?->foto ? url('/file/' . $dept->headOfDepartment->foto) : 'https://ui-avatars.com/api/?name='.urlencode($dept->headOfDepartment?->name ?? 'NA').'&background=random' }}" 
+                             class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700">
+                        <div>
+                            <p class="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Kepala Program</p>
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate w-40">
+                                {{ $dept->headOfDepartment?->name ?? 'Belum Ditentukan' }}
+                            </p>
                         </div>
                     </div>
 
-                    <div class="flex gap-2 w-full">
+                    {{-- Quick Stats (FIXED: Added ?->count() ?? 0) --}}
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+                            <div class="flex items-center gap-2 mb-1">
+                                <x-heroicon-m-academic-cap class="w-4 h-4 text-gray-400"/>
+                                <span class="text-xs font-medium text-gray-500">Kelas</span>
+                            </div>
+                            <span class="text-lg font-bold text-gray-900 dark:text-white">
+                                {{-- PERBAIKAN DI SINI: Gunakan ?->count() --}}
+                                {{ $dept->classes_count ?? $dept->classes?->count() ?? 0 }}
+                            </span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+                            <div class="flex items-center gap-2 mb-1">
+                                <x-heroicon-m-users class="w-4 h-4 text-gray-400"/>
+                                <span class="text-xs font-medium text-gray-500">Guru</span>
+                            </div>
+                            <span class="text-lg font-bold text-gray-900 dark:text-white">
+                                {{-- PERBAIKAN DI SINI: Gunakan ?->count() --}}
+                                {{ $dept->teachers_count ?? $dept->teachers?->count() ?? 0 }}
+                            </span>
+                        </div>
+                    </div>
 
-                        {{-- Tombol Manage --}}
+                    {{-- Actions --}}
+                    <div class="mt-auto flex gap-2">
                         <x-filament::button
                             tag="a"
                             color="gray"
-                            class="flex-1 justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                            :href="\App\Filament\Pages\ManageDepartmentClasses::getUrl(['department' => $dept->id])">
-                            Kelola Jurusan
+                            class="flex-1 justify-center bg-gray-900 text-white hover:bg-gray-800 border-transparent dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+                            :href="\App\Filament\Pages\ManageModulesClasses::getUrl(['department' => $dept->id])">
+                            Kelola
                         </x-filament::button>
 
-                        {{-- Tombol Hapus --}}
-                        <x-filament::button
-                            color="danger"
-                            wire:click="confirmDelete({{ $dept->id }})"
+                        <button 
+                            wire:click="$set('selectedDepartment', {{ $dept->id }})"
+                            class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
                             title="Hapus Jurusan">
-
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-
-                        </x-filament::button>
-                        <x-filament::modal id="delete-department">
-
-                            <x-slot name="heading">
-                                Hapus Jurusan
-                            </x-slot>
-
-                            <p class="text-sm text-gray-500">
-                                Apakah Anda yakin ingin menghapus jurusan ini?
-                                Data terkait (kelas & guru) akan terlepas dari jurusan.
-                            </p>
-
-                            <x-slot name="footer">
-                                <div class="flex justify-end gap-2">
-
-                                    <x-filament::button
-                                        color="gray"
-                                        x-on:click="$dispatch('close-modal', { id: 'delete-department' })">
-                                        Batal
-                                    </x-filament::button>
-
-                                    <x-filament::button
-                                        color="danger"
-                                        wire:click="deleteDepartment">
-                                        Ya, Hapus
-                                    </x-filament::button>
-
-                                </div>
-                            </x-slot>
-
-                        </x-filament::modal>
-
-
+                            <x-heroicon-o-trash class="w-5 h-5" />
+                        </button>
                     </div>
 
                 </div>
             </div>
-        </div>
 
         @empty
-        <div class="col-span-full flex flex-col items-center justify-center p-10 bg-white dark:bg-gray-900 rounded-xl border border-dashed border-gray-300">
-            <x-heroicon-o-building-office-2 class="w-12 h-12 text-gray-300 mb-2" />
-            <p class="text-gray-500 font-medium">Belum ada data jurusan.</p>
-        </div>
+            <div class="col-span-full flex flex-col items-center justify-center py-20 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-full mb-4">
+                    <x-heroicon-o-building-office-2 class="w-12 h-12 text-gray-400" />
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Belum Ada Jurusan</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-center max-w-sm mt-1">
+                    Silakan tambahkan data jurusan baru untuk memulai pengelolaan akademik.
+                </p>
+            </div>
         @endforelse
     </div>
 

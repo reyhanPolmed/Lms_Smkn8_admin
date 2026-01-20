@@ -19,9 +19,9 @@ class StudentClass extends Model
         return $this->hasMany(Student::class, 'class_level_id');
     }
 
-        public function departments()
+        public function modules()
     {
-        return $this->belongsToMany(Department::class);
+        return $this->belongsToMany(Modules::class);
     }
 
         public function homeroomTeacher(): BelongsTo

@@ -11,7 +11,7 @@ class Student extends Model
         'name',
         'nisn',
         'user_id',
-        'foto',
+        'photo',
         'jurusan',
         'class_level',
         'class_level_id',
@@ -27,9 +27,9 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function departments()
+    public function modules()
     {
-        return $this->belongsToMany(Department::class);
+        return $this->belongsToMany(Modules::class);
     }
 
     public function student_class(): BelongsTo

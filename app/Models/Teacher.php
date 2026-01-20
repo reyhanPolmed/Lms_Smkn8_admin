@@ -15,7 +15,7 @@ class Teacher extends Model
         'user_id',
         'nip',
         'name',
-        'foto',
+        'photo',
         'mapel',
         'department_id',
     ];
@@ -25,8 +25,8 @@ class Teacher extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function departments()
+    public function modules()
     {
-        return $this->belongsToMany(Department::class);
+        return $this->belongsToMany(Modules::class);
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
-use App\Models\Department;
+use App\Models\Modules as Department;
 use App\Models\StudentClass;
 use App\Models\Teacher;
 use Livewire\WithFileUploads;
@@ -118,12 +118,12 @@ class ManageDepartmentClasses extends Page
     public function save()
     {
         $this->validate([
-            'name' => 'required|min:3',
+            'title' => 'required|min:3',
             'description' => 'nullable',
         ]);
 
         $this->department->update([
-            'name' => $this->name,
+            'title' => $this->title,
             'description' => $this->description,
         ]);
 

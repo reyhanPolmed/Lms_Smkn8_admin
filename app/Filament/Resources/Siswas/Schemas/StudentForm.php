@@ -32,16 +32,16 @@ class StudentForm
                 ->maxLength(20)
                 ->placeholder('Contoh: 1234567890'),
 
-            Select::make('jurusan')
-                ->label('Jurusan')
-                ->required()
-                ->options([
-                    'IPA' => 'Ilmu Pengetahuan Alam (IPA)',
-                    'IPS' => 'Ilmu Pengetahuan Sosial (IPS)',
-                    'Bahasa' => 'Bahasa',
-                    'Kejuruan' => 'Program Kejuruan',
-                ])
-                ->placeholder('Pilih jurusan'),
+            // Select::make('jurusan')
+            //     ->label('Jurusan')
+            //     ->required()
+            //     ->options([
+            //         'IPA' => 'Ilmu Pengetahuan Alam (IPA)',
+            //         'IPS' => 'Ilmu Pengetahuan Sosial (IPS)',
+            //         'Bahasa' => 'Bahasa',
+            //         'Kejuruan' => 'Program Kejuruan',
+            //     ])
+            //     ->placeholder('Pilih jurusan'),
 
             Select::make('class_level_id')
                 ->label('Kelas')
@@ -51,7 +51,7 @@ class StudentForm
                 ->required()
                 ->placeholder('Pilih kelas'),
 
-            FileUpload::make('foto')
+            FileUpload::make('photo')
                 ->image()
                 ->maxFiles(1)
                 ->directory('students'),

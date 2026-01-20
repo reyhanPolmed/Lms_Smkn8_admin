@@ -3,7 +3,7 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
-use App\Models\Department;
+use App\Models\Modules as Department;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -16,9 +16,9 @@ use BackedEnum;
 
 use Filament\Support\Icons\Heroicon;
 
-class ViewDepartments extends Page
+class ViewModules extends Page
 {
-    protected string $view = 'filament.pages.view-departments';
+    protected string $view = 'filament.pages.view-modules';
 
     protected static ?string $navigationLabel = 'Mata Pelajaran';
 
@@ -101,6 +101,6 @@ class ViewDepartments extends Page
             ->send();
 
 
-            return redirect()->to(\App\Filament\Pages\ViewDepartments::getUrl());
+            return redirect()->to(\App\Filament\Pages\ViewModules::getUrl());
     }
 }

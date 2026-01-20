@@ -30,18 +30,11 @@ class TeacherForm
                 ->maxLength(30)
                 ->placeholder('Contoh: 1234567890'),
 
-            FileUpload::make('foto')
+            FileUpload::make('photo')
                 ->image()
                 ->maxFiles(1)
                 ->directory('teachers'),
                 
-            TextInput::make('mapel')
-                ->label('Mata Pelajaran')
-                ->required()
-                ->maxLength(100)
-                ->placeholder('Contoh: Matematika, Bahasa Indonesia'),
-
-
             // =====================
             // AKUN LOGIN GURU
             // =====================
