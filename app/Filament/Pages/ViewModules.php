@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
 use App\Models\Modules as Department;
+use App\Models\Departments;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -22,7 +23,10 @@ class ViewModules extends Page
 
     protected static ?string $navigationLabel = 'Mata Pelajaran';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice;
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Akademik';
+    protected static ?int $navigationSort = 10;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookOpen;
     // protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
 
@@ -52,35 +56,31 @@ class ViewModules extends Page
 
                 ->form([
 
-                    TextInput::make('name')
+                    TextInput::make('title')
                         ->label('Nama Mata Pelajaran')
                         ->required()
                         ->maxLength(255),
 
-                    FileUpload::make('foto')
+                    FileUpload::make('thumbnail')
                         ->image()
                         ->maxFiles(1)
                         ->directory('matakuliah'),
-
-                    TextInput::make('slug')
-                        ->label('Slug')
-                        ->required(),
 
                     Textarea::make('description')
                         ->label('Deskripsi')
                         ->rows(3),
 
-                    Select::make('head_of_department_id')
-                        ->label('Guru Pengampu / Kaprog')
-                        ->options(Teacher::pluck('name', 'id'))
+                    Select::make('department_id')
+                        ->label('Jurusan')
+                        ->options(Departments::pluck('name', 'id'))
                         ->searchable()
-                        ->preload(),
-
+                        ->required(),
                 ])
 
                 ->successNotificationTitle('Mata Pelajaran berhasil ditambahkan'),
         ];
     }
+    
 
     public function confirmDelete($id)
     {
@@ -101,6 +101,6 @@ class ViewModules extends Page
             ->send();
 
 
-            return redirect()->to(\App\Filament\Pages\ViewModules::getUrl());
+        return redirect()->to(\App\Filament\Pages\ViewModules::getUrl());
     }
 }

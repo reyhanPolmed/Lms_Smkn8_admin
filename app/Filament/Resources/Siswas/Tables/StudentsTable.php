@@ -17,7 +17,7 @@ class StudentsTable
     {
         return $table
             ->columns([
-                ImageColumn::make('foto')
+                ImageColumn::make('photo')
                     ->label('Foto')
                     ->circular()
                     ->default('/images/placeholder-student.png'),
@@ -32,18 +32,15 @@ class StudentsTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('jurusan')
+                TextColumn::make('department.name')
                     ->label('Jurusan')
                     ->searchable()
                     ->sortable(),
 
-                BadgeColumn::make('class_level')
-                    ->label('Kelass')
-                    ->colors([
-                        'primary' => 'X',
-                        'info' => 'XI',
-                        'success' => 'XII',
-                    ]),
+                TextColumn::make('student_class.name')
+                    ->label('Kelas')
+                    ->searchable()
+                    ->sortable(),
 
                 BadgeColumn::make('user.identifier')
                     ->label('Status Login')

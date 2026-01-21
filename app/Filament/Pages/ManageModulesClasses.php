@@ -13,7 +13,7 @@ class ManageModulesClasses extends Page
 {
     use WithFileUploads;
 
-    protected string $view = 'filament.pages.manage-classes3';
+    protected string $view = 'filament.pages.manage-jurusan';
 
     protected static ?string $slug = 'modules/{department}/classes';
     protected static bool $shouldRegisterNavigation = false;

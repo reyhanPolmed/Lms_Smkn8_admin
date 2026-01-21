@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Teachers\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use App\Models\Departments;
+use Filament\Forms\Components\Select;
 
 class TeacherForm
 {
@@ -34,7 +36,13 @@ class TeacherForm
                 ->image()
                 ->maxFiles(1)
                 ->directory('teachers'),
-                
+
+            Select::make('department_id')
+                ->label('Jurusan')
+                ->options(Departments::pluck('name', 'id'))
+                ->searchable()
+                ->required(),
+
             // =====================
             // AKUN LOGIN GURU
             // =====================

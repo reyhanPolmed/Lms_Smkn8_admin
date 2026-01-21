@@ -21,7 +21,7 @@ class ManageDepartmentClasses extends Page
     public $teacher_id;
     public $allTeachers;
 
-    protected string $view = 'filament.pages.manage-classes';
+    protected string $view = 'filament.pages.detail_mapel';
 
 
     // 1. Pastikan slug ini ada (seperti solusi sebelumnya)

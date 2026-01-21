@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Siswas\Schemas;
 
 use App\Models\StudentClass;
+use App\Models\Departments;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
@@ -32,6 +33,17 @@ class StudentForm
                 ->maxLength(20)
                 ->placeholder('Contoh: 1234567890'),
 
+            FileUpload::make('photo')
+                ->image()
+                ->maxFiles(1)
+                ->directory('students'),
+
+            Select::make('department_id')
+                ->label('Jurusan')
+                ->options(Departments::pluck('name', 'id'))
+                ->searchable()
+                ->required(),
+
             // Select::make('jurusan')
             //     ->label('Jurusan')
             //     ->required()
@@ -43,6 +55,8 @@ class StudentForm
             //     ])
             //     ->placeholder('Pilih jurusan'),
 
+
+
             Select::make('class_level_id')
                 ->label('Kelas')
                 ->relationship('student_class', 'name')
@@ -50,12 +64,6 @@ class StudentForm
                 ->preload()
                 ->required()
                 ->placeholder('Pilih kelas'),
-
-            FileUpload::make('photo')
-                ->image()
-                ->maxFiles(1)
-                ->directory('students'),
-
 
             // =====================
             // AKUN LOGIN SISWA

@@ -13,11 +13,9 @@ class Modules extends Model
 
     protected $fillable = [
         'title',
-        'foto',
-        'slug',
+        'thumbnail',
         'description',
-        'icon_color',
-        'head_of_department_id',
+        'department_id',
     ];
 
     // ================= STUDENTS =================

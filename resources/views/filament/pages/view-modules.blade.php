@@ -78,18 +78,6 @@
             {{-- 2. CONTENT BODY --}}
             <div class="p-5 flex flex-col flex-grow">
 
-                {{-- Head of Department (Card Style) --}}
-                <div class="flex items-center gap-3 mb-5 p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
-                    <img
-                        src="{{ $dept->headOfDepartment?->foto ? url('/file/' . $dept->headOfDepartment->foto) : 'https://ui-avatars.com/api/?name=NA&background=random' }}"
-                        class="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-700">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Kaprog</span>
-                        <span class="text-sm font-semibold text-gray-900 dark:text-white truncate max-w-[150px]">
-                            {{ $dept->headOfDepartment?->name ?? 'Belum Ditentukan' }}
-                        </span>
-                    </div>
-                </div>
 
                 {{-- Classes List --}}
                 <div class="mb-6 flex-grow">
@@ -179,7 +167,7 @@
                             color="gray"
                             class="flex-1 justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             :href="\App\Filament\Pages\ManageDepartmentClasses::getUrl(['department' => $dept->id])">
-                            Kelola Jurusan
+                            Kelola Mata Pelajaran
                         </x-filament::button>
 
                         {{-- Tombol Hapus --}}
@@ -194,38 +182,6 @@
                             </svg>
 
                         </x-filament::button>
-                        <x-filament::modal id="delete-department">
-
-                            <x-slot name="heading">
-                                Hapus Jurusan
-                            </x-slot>
-
-                            <p class="text-sm text-gray-500">
-                                Apakah Anda yakin ingin menghapus jurusan ini?
-                                Data terkait (kelas & guru) akan terlepas dari jurusan.
-                            </p>
-
-                            <x-slot name="footer">
-                                <div class="flex justify-end gap-2">
-
-                                    <x-filament::button
-                                        color="gray"
-                                        x-on:click="$dispatch('close-modal', { id: 'delete-department' })">
-                                        Batal
-                                    </x-filament::button>
-
-                                    <x-filament::button
-                                        color="danger"
-                                        wire:click="deleteDepartment">
-                                        Ya, Hapus
-                                    </x-filament::button>
-
-                                </div>
-                            </x-slot>
-
-                        </x-filament::modal>
-
-
                     </div>
 
                 </div>
@@ -238,6 +194,36 @@
             <p class="text-gray-500 font-medium">Belum ada data jurusan.</p>
         </div>
         @endforelse
+        <x-filament::modal id="delete-department">
+
+            <x-slot name="heading">
+                Hapus Jurusan
+            </x-slot>
+
+            <p class="text-sm text-gray-500">
+                Apakah Anda yakin ingin menghapus jurusan ini?
+                Data terkait (kelas & guru) akan terlepas dari jurusan.
+            </p>
+
+            <x-slot name="footer">
+                <div class="flex justify-end gap-2">
+
+                    <x-filament::button
+                        color="gray"
+                        x-on:click="$dispatch('close-modal', { id: 'delete-department' })">
+                        Batal
+                    </x-filament::button>
+
+                    <x-filament::button
+                        color="danger"
+                        wire:click="deleteDepartment">
+                        Ya, Hapus
+                    </x-filament::button>
+
+                </div>
+            </x-slot>
+
+        </x-filament::modal>
     </div>
 
 </x-filament::page>

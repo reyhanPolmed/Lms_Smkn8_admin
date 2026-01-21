@@ -1,1 +1,16 @@
 jurusan (department) -> kursus(modules) -> bab(sections) -> materi(lessons) 
+
+membuat riderect dari tampilan awal ke /login
+
+sensor gerakan setiap 10 detik durasinya nyangkut
+durasi 20 detik 
+
+tidak mengkopas teks
+
+view departments ini ke page jurusan
+view modules ini ke card matapelajaran
+
+department punya foreign key ke modules makanya department bisa mengambil module yang terdaftar ke department, dari modules yang terdaftar bisa hitung guru yang ada di jurusan itu
+
+next menambahkan jurusan
+menambahkan kepala jurusan

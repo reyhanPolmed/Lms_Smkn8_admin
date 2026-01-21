@@ -17,7 +17,7 @@ class TeachersTable
     {
         return $table
             ->columns([
-                ImageColumn::make('foto')
+                ImageColumn::make('photo')
                     ->label('Foto')
                     ->circular()
                     ->default('/images/placeholder-student.png'),
@@ -32,8 +32,8 @@ class TeachersTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('mapel')
-                    ->label('Mata Pelajaran')
+                TextColumn::make('department.name')
+                    ->label('Jurusan')
                     ->searchable()
                     ->sortable(),
 

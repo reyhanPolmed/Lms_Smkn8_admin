@@ -128,7 +128,7 @@
                 <div class="mt-auto">
                     <a href="{{ \App\Filament\Pages\ManageDepartmentClasses::getUrl(['department' => $module->id]) }}" 
                        class="group/btn flex items-center justify-between w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-gray-900 dark:hover:bg-primary-600 text-gray-700 dark:text-gray-300 hover:text-white rounded-xl transition-all duration-200">
-                        <span class="text-sm font-semibold">Kelola Module</span>
+                        <span class="text-sm font-semibold">Lihat Mata Pelajaran</span>
                         <x-heroicon-m-arrow-right class="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" />
                     </a>
                 </div>

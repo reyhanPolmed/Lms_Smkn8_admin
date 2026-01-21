@@ -63,31 +63,6 @@
                 </div>
             </div>
 
-            {{-- 2. CARD HEAD OF DEPT --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider">Ketua Jurusan</h4>
-                    @if($record->headOfDepartment)
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700">Aktif</span>
-                    @endif
-                </div>
-
-                @if($record->headOfDepartment)
-                    <div class="flex items-center gap-3">
-                        <img src="{{ $record->headOfDepartment->foto ? url('/file/' . $record->headOfDepartment->foto) : 'https://ui-avatars.com/api/?name='.urlencode($record->headOfDepartment->name) }}" 
-                             class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100">
-                        <div>
-                            <p class="text-sm font-semibold text-gray-900">{{ $record->headOfDepartment->name }}</p>
-                            <p class="text-xs text-gray-500">NIP. {{ $record->headOfDepartment->nip }}</p>
-                        </div>
-                    </div>
-                @else
-                    <div class="flex flex-col items-center justify-center p-4 border border-dashed rounded-lg bg-gray-50">
-                        <p class="text-xs text-gray-400 italic">Belum ditentukan</p>
-                    </div>
-                @endif
-            </div>
-
         </div>
 
         {{-- ============ RIGHT COLUMN (MAIN CONTENT) ============ --}}

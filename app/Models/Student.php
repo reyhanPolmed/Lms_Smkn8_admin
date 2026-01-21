@@ -12,7 +12,7 @@ class Student extends Model
         'nisn',
         'user_id',
         'photo',
-        'jurusan',
+        'deparment_id',
         'class_level',
         'class_level_id',
     ];
@@ -35,5 +35,10 @@ class Student extends Model
     public function student_class(): BelongsTo
     {
         return $this->belongsTo(StudentClass::class, 'class_level_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Departments::class);
     }
 }
