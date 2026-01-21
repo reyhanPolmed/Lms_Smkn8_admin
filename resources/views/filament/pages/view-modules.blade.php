@@ -55,10 +55,9 @@
 
             {{-- 1. HEADER IMAGE (Full Bleed) --}}
             <div class="relative h-48 w-full overflow-hidden bg-gray-100">
-                <img
-                    src="{{ url('/file/' . $dept->foto) }}"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    alt="{{ $dept->name }}">
+                <img src="{{ $module->thumbnail? asset('uploads/' . $module->thumbnail): asset('placeholder.svg') }}"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    alt="{{ $module->name }}">
                 {{-- Floating Icon Badge --}}
                 <div class="absolute top-3 right-3 p-2 rounded-lg backdrop-blur-md bg-white/80 dark:bg-black/50 shadow-sm border border-white/20">
                     @svg($theme['icon'], 'w-5 h-5 ' . $theme['text'])

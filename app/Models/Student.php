@@ -12,7 +12,7 @@ class Student extends Model
         'nisn',
         'user_id',
         'photo',
-        'deparment_id',
+        'department_id',
         'class_level',
         'class_level_id',
     ];

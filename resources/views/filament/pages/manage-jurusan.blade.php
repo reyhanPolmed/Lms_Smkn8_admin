@@ -1,4 +1,4 @@
-<x-filament::page>
+    <x-filament::page>
 
     {{-- ================= HEADER SECTION ================= --}}
     <div class="relative overflow-hidden bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm mb-8">
@@ -49,10 +49,9 @@
 
             {{-- 1. IMAGE HEADER & BADGE --}}
             <div class="relative h-44 w-full overflow-hidden bg-gray-100">
-                <img
-                    src="{{ $module->foto ? url('/file/'.$module->foto) : '/placeholder.svg' }}"
-                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    alt="{{ $module->name }}">
+               <img src="{{ $module->thumbnail? asset('uploads/' . $module->thumbnail): asset('placeholder.svg') }}"
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                     alt="{{ $module->name }}">
 
                 {{-- Dark Gradient Overlay --}}
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"></div>
