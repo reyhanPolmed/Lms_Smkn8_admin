@@ -37,6 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
+                \App\Filament\Pages\ManageModulesClasses::class,
                 \App\Filament\Pages\ViewDepartments::class,
                 \App\Filament\Pages\ViewKelas::class,
             ])

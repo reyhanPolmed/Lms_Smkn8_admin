@@ -21,10 +21,60 @@ class ViewDepartments extends Page
 
     public $selectedDepartment;
 
+    public ?int $tingkatFilter = null;
+
+
     public function getDepartments()
     {
-        return Departments::with([])->get();
+        return \App\Models\Departments::query()
+
+            /*
+        |--------------------------------------------------------------------------
+        | Hitung jumlah MAPEL sesuai filter tingkat
+        |--------------------------------------------------------------------------
+        */
+            ->withCount([
+                'modules as modules_count' => function ($query) {
+                    $query->when($this->tingkatFilter, function ($q) {
+                        $q->whereHas('tingkats', function ($qq) {
+                            $qq->where('tingkat_id', $this->tingkatFilter);
+                        });
+                    });
+                }
+            ])
+
+            ->withCount([
+                'modules as teachers_count' => function ($query) {
+                    $query
+                        ->when($this->tingkatFilter, function ($q) {
+                            $q->whereHas('tingkats', function ($qq) {
+                                $qq->where('tingkat_id', $this->tingkatFilter);
+                            });
+                        })
+                        ->whereHas('teachers')
+                        ->withCount('teachers');
+                }
+            ])
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Filter department yang punya mapel di tingkat tsb
+        |--------------------------------------------------------------------------
+        */
+            ->when($this->tingkatFilter, function ($query) {
+                $query->whereHas('modules.tingkats', function ($q) {
+                    $q->where('tingkat_id', $this->tingkatFilter);
+                });
+            })
+
+            ->with([
+                'modules.teachers'
+            ])
+
+            ->get();
     }
+
 
     public function confirmDelete($id)
     {

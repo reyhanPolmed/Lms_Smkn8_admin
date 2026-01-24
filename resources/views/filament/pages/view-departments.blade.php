@@ -24,30 +24,48 @@
         </div>
     </div>
 
+    {{-- ================= FILTER BAR ================= --}}
+    <div class="flex items-center gap-3 mb-6">
+
+        <select
+            wire:model.live="tingkatFilter"
+            class="rounded-xl border-gray-300 text-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-700">
+            <option value="">Semua Tingkat</option>
+
+            @foreach(\App\Models\Tingkat::orderBy('name')->get() as $tingkat)
+            <option value="{{ $tingkat->id }}">
+                {{ $tingkat->name }}
+            </option>
+            @endforeach
+        </select>
+
+    </div>
+
+
     {{-- ================= GRID DEPARTMENTS ================= --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse ($this->getDepartments() as $dept)
         @php
-            $slug = $dept->slug ?? Str::slug($dept->name ?? 'unknown');
-            $theme = match($slug) {
-                'tata-boga', 'kuliner' => ['color' => 'orange', 'border' => 'border-orange-500', 'text' => 'text-orange-600', 'icon' => 'heroicon-o-cake'],
-                'software-engineering', 'rpl', 'pplg' => ['color' => 'blue', 'border' => 'border-blue-500', 'text' => 'text-blue-600', 'icon' => 'heroicon-o-code-bracket'],
-                'network-engineering', 'tjkt' => ['color' => 'purple', 'border' => 'border-purple-500', 'text' => 'text-purple-600', 'icon' => 'heroicon-o-wifi'],
-                default => ['color' => 'gray', 'border' => 'border-gray-500', 'text' => 'text-gray-600', 'icon' => 'heroicon-o-academic-cap'],
-            };
+        $slug = $dept->slug ?? Str::slug($dept->name ?? 'unknown');
+        $theme = match($slug) {
+        'tata-boga', 'kuliner' => ['color' => 'orange', 'border' => 'border-orange-500', 'text' => 'text-orange-600', 'icon' => 'heroicon-o-cake'],
+        'software-engineering', 'rpl', 'pplg' => ['color' => 'blue', 'border' => 'border-blue-500', 'text' => 'text-blue-600', 'icon' => 'heroicon-o-code-bracket'],
+        'network-engineering', 'tjkt' => ['color' => 'purple', 'border' => 'border-purple-500', 'text' => 'text-purple-600', 'icon' => 'heroicon-o-wifi'],
+        default => ['color' => 'gray', 'border' => 'border-gray-500', 'text' => 'text-gray-600', 'icon' => 'heroicon-o-academic-cap'],
+        };
         @endphp
 
         <div class="group relative flex flex-col h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-            
+
             <div class="absolute top-0 inset-x-0 h-1 {{ $theme['border'] }}"></div>
 
             {{-- 1. HEADER IMAGE --}}
             <div class="relative h-44 w-full overflow-hidden bg-gray-200">
                 <img src="{{ $dept->image? asset('uploads/' . $dept->image): asset('placeholder.svg') }}"
-                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                     alt="{{ $dept->name }}">
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    alt="{{ $dept->name }}">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                
+
                 <div class="absolute top-3 right-3 p-2 rounded-xl backdrop-blur-md bg-white/90 dark:bg-black/50 shadow-sm">
                     @svg($theme['icon'], 'w-5 h-5 ' . $theme['text'])
                 </div>
@@ -59,13 +77,13 @@
 
             {{-- 2. CONTENT BODY --}}
             <div class="p-5 flex flex-col flex-grow">
-                
+
                 {{-- PERBAIKAN: Section Kepala Program --}}
                 <div class="flex items-center gap-3 mb-5 pb-5 border-b border-gray-100 dark:border-gray-800">
                     <div class="shrink-0">
-                        <img src="{{ $dept->headOfDepartment?->image ? asset('uploads/' . $dept->headOfDepartment->image) : 'https://ui-avatars.com/api/?name='.urlencode($dept->headOfDepartment?->name ?? 'User').'&color=7F9CF5&background=EBF4FF' }}" 
-                             class="w-10 h-10 rounded-full object-cover border border-gray-200"
-                             alt="Avatar">
+                        <img src="{{ $dept->headOfDepartment?->image ? asset('uploads/' . $dept->headOfDepartment->image) : 'https://ui-avatars.com/api/?name='.urlencode($dept->headOfDepartment?->name ?? 'User').'&color=7F9CF5&background=EBF4FF' }}"
+                            class="w-10 h-10 rounded-full object-cover border border-gray-200"
+                            alt="Avatar">
                     </div>
                     <div class="min-w-0">
                         <p class="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Kepala Program</p>
@@ -83,7 +101,8 @@
                             <span class="text-xs font-medium text-gray-500">Mapel</span>
                         </div>
                         <span class="text-lg font-bold text-gray-900 dark:text-white">
-                            {{ $dept->modules_count ?? $dept->modules?->count() ?? 0 }}
+                            {{ $dept->modules_count }}
+
                         </span>
                     </div>
                     <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
@@ -92,7 +111,7 @@
                             <span class="text-xs font-medium text-gray-500">Guru</span>
                         </div>
                         <span class="text-lg font-bold text-gray-900 dark:text-white">
-                            {{ $dept->modules?->flatMap->teachers->unique('id')->count() ?? 0 }}
+                            {{ $dept->teachers_count ?? 0 }}
                         </span>
                     </div>
                 </div>
@@ -100,9 +119,11 @@
                 {{-- Actions --}}
                 <div class="mt-auto flex gap-2">
                     <x-filament::button
-                        tag="a" color="gray" outline
+                        tag="a"
+                        color="gray"
+                        outline
                         class="flex-1 justify-center"
-                        :href="\App\Filament\Pages\ManageModulesClasses::getUrl(['department' => $dept->id])">
+                        :href="\App\Filament\Pages\ManageModulesClasses::getUrl(['department' => $dept->id]) . ($tingkatFilter ? '?tingkat=' . $tingkatFilter : '')">
                         Kelola
                     </x-filament::button>
 
@@ -116,7 +137,7 @@
             </div>
         </div>
         @empty
-            {{-- Bagian empty tetap sama --}}
+        {{-- Bagian empty tetap sama --}}
         @endforelse
     </div>
 

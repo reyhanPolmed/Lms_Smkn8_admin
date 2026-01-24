@@ -57,9 +57,18 @@ class Modules extends Model
         return $this->belongsTo(Teacher::class, 'head_of_department_id');
     }
 
-        public function department()
+    public function department()
     {
         return $this->belongsTo(Departments::class);
     }
-}
 
+    public function tingkats()
+    {
+        return $this->belongsToMany(
+            Tingkat::class,
+            'modules_tingkat',
+            'module_id',   // pivot column di tabel pivot
+            'tingkat_id'
+        );
+    }
+}

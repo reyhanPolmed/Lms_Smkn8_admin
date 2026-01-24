@@ -34,8 +34,9 @@ class ManageDepartmentClasses extends Page
     public $allClasses;
 
 
-    public function mount(Department $department): void
+public function mount(Department $department): void
     {
+        // ... (kode load relationship yang lama tetap sama) ...
         $department->load([
             'headOfDepartment',
             'classes.homeroomTeacher',
@@ -46,10 +47,20 @@ class ManageDepartmentClasses extends Page
             'teachers',
         ]);
 
-        // Masukkan ke properti public
         $this->department = $department;
 
-        $this->allClasses = StudentClass::with(['homeroomTeacher', 'students'])->get();
+        // -------------------------------------------------------------
+        // PERBAIKAN LOGIC
+        // -------------------------------------------------------------
+        // Ambil kelas yang department_id-nya SAMA dengan department_id milik Module ini
+        
+        $this->allClasses = StudentClass::query()
+            ->where('department_id', $this->department->department_id) 
+            ->with(['homeroomTeacher', 'students'])
+            ->get();
+
+        // -------------------------------------------------------------
+
         $this->allTeachers = Teacher::all();
 
         $this->name = $department->name;

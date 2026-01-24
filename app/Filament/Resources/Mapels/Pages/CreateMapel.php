@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\Admins\Pages;
+namespace App\Filament\Resources\Mapels\Pages;
 
-use App\Filament\Resources\Admins\AdminResource;
+use App\Filament\Resources\Mapels\MapelResource;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateAdmin extends CreateRecord
+class CreateMapel extends CreateRecord
 {
-    protected static string $resource = AdminResource::class;
+    protected static string $resource = MapelResource::class;
 
     protected function getRedirectUrl(): string
     {
