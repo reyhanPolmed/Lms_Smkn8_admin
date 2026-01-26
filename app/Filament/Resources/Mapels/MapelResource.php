@@ -28,8 +28,10 @@ class MapelResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Mata pelajaran';
 
-    protected static ?string $navigationLabel = 'Mata Pelajarans';
+    protected static ?string $navigationLabel = 'Mata Pelajaran';
 
+    protected static ?string $modelLabel = 'Mata Pelajaran';
+    protected static ?string $pluralModelLabel = 'Mata Pelajaran';
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Akademik';
 
     public static function form(Schema $schema): Schema

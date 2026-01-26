@@ -25,20 +25,50 @@
     </div>
 
     {{-- ================= FILTER BAR ================= --}}
-    <div class="flex items-center gap-3 mb-6">
+    <div class="flex items-center justify-between mb-6 pt-4">
 
-        <select
-            wire:model.live="tingkatFilter"
-            class="rounded-xl border-gray-300 text-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-700">
-            <option value="">Semua Tingkat</option>
+        <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200">
+            Daftar Siswa
+        </h2>
 
-            @foreach(\App\Models\Tingkat::orderBy('name')->get() as $tingkat)
-            <option value="{{ $tingkat->id }}">
-                {{ $tingkat->name }}
-            </option>
-            @endforeach
-        </select>
+        <div class="flex items-center gap-2">
+            <span class="text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+            </span>
 
+            <div class="relative">
+                <select
+                    wire:model.live="tingkatFilter"
+                    class="
+                    appearance-none 
+                    bg-transparent 
+                    border border-gray-200 dark:border-gray-700 
+                    text-gray-600 dark:text-gray-300 
+                    text-sm font-medium 
+                    rounded-lg 
+                    pl-3 pr-8 py-2 
+                    focus:ring-0 focus:border-primary-500 
+                    cursor-pointer
+                    hover:border-gray-300 dark:hover:border-gray-600
+                    transition-colors
+                ">
+                    <option value="">Semua Tingkat</option>
+                    @foreach(\App\Models\Tingkat::orderBy('name')->get() as $tingkat)
+                    <option value="{{ $tingkat->id }}">
+                        {{ $tingkat->name }}
+                    </option>
+                    @endforeach
+                </select>
+
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </div>
+        </div>
     </div>
 
 

@@ -22,6 +22,8 @@ class ViewModules extends Page
     protected string $view = 'filament.pages.view-modules';
 
     protected static ?string $navigationLabel = 'Mata Pelajaran';
+        // 2. TAMBAHKAN INI: Agar tidak muncul di sidebar menu
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Akademik';
     protected static ?int $navigationSort = 10;

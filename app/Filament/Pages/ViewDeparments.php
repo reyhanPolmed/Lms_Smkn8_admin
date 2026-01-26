@@ -13,11 +13,11 @@ class ViewDepartments extends Page
 {
     protected string $view = 'filament.pages.view-departments';
 
-    protected static ?string $navigationLabel = 'Jurusan';
+    protected static ?string $navigationLabel = 'Overview';
+
+    protected static ?string $title = 'Overview';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice;
-
-    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Akademik';
 
     public $selectedDepartment;
 

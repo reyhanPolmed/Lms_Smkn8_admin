@@ -24,6 +24,8 @@ class AdminResource extends Resource
 
     protected static ?string $navigationLabel = 'Admin';
 
+    protected static ?string $modelLabel = 'Admin';
+    protected static ?string $pluralModelLabel = 'Admin';
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Pengguna';
 
     public static function form(Schema $schema): Schema

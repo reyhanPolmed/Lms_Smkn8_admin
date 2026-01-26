@@ -12,6 +12,7 @@ class StudentClass extends Model
         'name',
         'level',
         'homeroom_teacher_id',
+        'department_id',
     ];
 
     public function students(): HasMany

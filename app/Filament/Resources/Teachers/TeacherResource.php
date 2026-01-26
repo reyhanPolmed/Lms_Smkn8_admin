@@ -24,6 +24,9 @@ class TeacherResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationLabel = 'Guru';
+    protected static ?string $modelLabel = 'Guru';
+    protected static ?string $pluralModelLabel = 'Guru';
+
 
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Pengguna';
 

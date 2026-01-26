@@ -8,7 +8,8 @@ class Departments extends Model
 {
     protected $fillable = [
         'name',
-        'foto',
+        'image',
+        'head_department_id',
     ];
     public function modules()
     {
