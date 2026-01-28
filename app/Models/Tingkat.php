@@ -20,4 +20,9 @@ class Tingkat extends Model
             'module_id'
         );
     }
+
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
 }

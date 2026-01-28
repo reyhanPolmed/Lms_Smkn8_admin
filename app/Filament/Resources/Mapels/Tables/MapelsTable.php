@@ -22,19 +22,19 @@ class MapelsTable
                 // 1. Thumbnail (Image)
                 ImageColumn::make('thumbnail')
                     ->square() // atau ->circular()
-                    ->label('Thumbnail'),
+                    ->label('Foto'),
 
                 // 2. Title (Judul Module)
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
-                    ->label('Judul Mapel'),
+                    ->label('Mata Pelajaran'),
 
                 // 3. Department (Relasi BelongsTo)
                 // Asumsi: Di model Module ada fungsi 'department()'
                 TextColumn::make('department.name')
-                    ->label('Department')
+                    ->label('Jurusan')
                     ->sortable()
                     ->badge() // Opsional: Memberikan background warna
                     ->color('info'),
@@ -50,7 +50,7 @@ class MapelsTable
                 TextColumn::make('description')
                     ->label('Deskripsi')
                     ->limit(50) // Membatasi teks agar tidak kepanjangan di tabel
-                    ->wrap(), // Text turun ke bawah jika panjang
+                    ->wrap(), // Text turun ke bawah jika panjang// Text turun ke bawah jika panjang
             ])
             ->filters([
 

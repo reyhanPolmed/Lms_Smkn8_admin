@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Siswas\Schemas;
 
 use App\Models\StudentClass;
 use App\Models\Departments;
+use App\Models\Tingkat;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
@@ -64,6 +65,12 @@ class StudentForm
                 ->preload()
                 ->required()
                 ->placeholder('Pilih kelas'),
+
+            Select::make('tingkat_id')
+                ->label('Tingkat')
+                ->options(Tingkat::pluck('name', 'id'))
+                ->searchable()
+                ->required(),
 
             // =====================
             // AKUN LOGIN SISWA

@@ -1,178 +1,181 @@
 <x-filament::page>
+    <div class="space-y-6">
+        
+        {{-- Header Section dengan gaya minimalis --}}
+        <div class="flex items-center justify-between px-1">
+            {{-- Slot untuk action tambahan jika diperlukan --}}
+        </div>
 
-    {{-- ============================= --}}
-    {{-- DUMMY DATA --}}
-    {{-- ============================= --}}
-    @php
-    $classes = [
-    (object)[
-    'id' => 1,
-    'name' => 'Class 10-A',
-    'grade' => 10,
-    'major' => 'Science',
-    'subjects' => collect([
-    (object)['name' => 'Mathematics (Advanced)', 'code' => 'MATH-101-A', 'icon' => 'heroicon-s-calculator', 'color' => 'orange', 'teacher' => 'Sarah Wilson, M.Sc.'],
-    (object)['name' => 'Physics (Laboratory)', 'code' => 'PHYS-102-A', 'icon' => 'heroicon-s-beaker', 'color' => 'blue', 'teacher' => null],
-    ])
-    ],
-    (object)[
-    'id' => 2,
-    'name' => 'Class 11-B',
-    'grade' => 11,
-    'major' => 'Computer Engineering',
-    'subjects' => collect([
-    (object)['name' => 'Web Programming', 'code' => 'WEB-201', 'icon' => 'heroicon-s-code-bracket', 'color' => 'purple', 'teacher' => 'Michael Chen'],
-    ])
-    ],
-    ];
-    @endphp
-
-    <x-filament::section>
-        <x-slot name="heading">Class & Subject List</x-slot>
-
-        <div class="overflow-x-auto -mx-6">
-            <table class="w-full text-left border-collapse ">
+        {{-- Container Table Custom --}}
+        <div class="overflow-x-auto pb-4" 
+             x-data="{ 
+                openRows: [1], 
+                toggle(id) {
+                    if (this.openRows.includes(id)) {
+                        this.openRows = this.openRows.filter(i => i !== id);
+                    } else {
+                        this.openRows.push(id);
+                    }
+                }
+             }">
+            
+            <table class="w-full text-left border-separate border-spacing-y-4 px-2">
                 <thead>
-                    <tr class="bg-gray-50/50 dark:bg-gray-800/50 border-y border-gray-200 dark:border-gray-700 text-gray-500 uppercase text-[10px] font-black tracking-widest">
-                        <th class="px-6 py-4 w-12 text-center"> </th>
-                        <th class="px-6 py-4">Class Name</th>
-                        <th class="px-6 py-4 text-center">Grade</th>
-                        <th class="px-6 py-4">Major/Stream</th>
-                        <th class="px-6 py-4 text-center">Wali Kelas</th>
-                        <th class="px-6 py-4 text-right">Actions</th>
+                    <tr class="text-xs font-bold tracking-wider text-slate-800 uppercase dark:bg-gray-800 dark:text-gray-300">
+                        <th class="px-6 py-2 w-12 text-center"> </th>
+                        <th class="px-6 py-2">Nama Kelas</th>
+                        <th class="px-6 py-2 text-center">Jurusan</th>
+                        <th class="px-6 py-2 text-center">Wali Kelas</th>
+                        <th class="px-6 py-2 text-right">Aksi</th>
                     </tr>
                 </thead>
 
-                <tbody
-                    x-data="{ 
-                        openRows: [1], 
-                        toggle(id) {
-                            if (this.openRows.includes(id)) {
-                                this.openRows = this.openRows.filter(i => i !== id);
-                            } else {
-                                this.openRows.push(id);
-                            }
-                        }
-                    }"
-                    class="dark:divide-gray-700">
+                <tbody class="text-sm">
                     @foreach ($classes as $class)
-                    {{-- CLASS ROW --}}
-                    <tr
-                        x-on:click="toggle({{ $class->id }})"
-                        class="group cursor-pointer transition-all duration-300 py-10"
+                    
+                    {{-- CLASS ROW (CARD STYLE) --}}
+                    <tr x-on:click="toggle({{ $class->id }})"
+                        class="group cursor-pointer transition-all duration-300 transform bg-white dark:bg-gray-900 shadow-sm hover:shadow-lg hover:-translate-y-1 rounded-xl border border-gray-200 dark:border-gray-800 relative z-10"
                         x-bind:class="openRows.includes({{ $class->id }}) 
-                                ? 'bg-primary-50/40 dark:bg-primary-900/10' 
-                                : 'hover:bg-gray-50 dark:hover:bg-gray-800 border-transparent'">
-                        <td class="px-6 py-4">
-                            <div class="transition-transform duration-500 flex justify-center"
-                                x-bind:class="openRows.includes({{ $class->id }}) ? 'rotate-90' : ''">
-                                <x-filament::icon icon="heroicon-m-chevron-right" class="w-5 h-5" x-bind:class="openRows.includes({{ $class->id }}) ? 'text-primary-600' : 'text-gray-400'" />
+                                ? 'ring-2 ring-primary-500/50 dark:ring-primary-500/30' 
+                                : ''">
+                        
+                        {{-- Icon Chevron --}}
+                        <td class="px-6 py-5 rounded-l-xl bg-gray-50/50 dark:bg-gray-800/50 group-hover:bg-white dark:group-hover:bg-gray-800 transition-colors">
+                            <div class="flex justify-center transition-transform duration-500"
+                                 x-bind:class="openRows.includes({{ $class->id }}) ? 'rotate-90' : ''">
+                                <div class="p-1 rounded-full bg-white dark:bg-gray-700 shadow-sm ring-1 ring-gray-900/5">
+                                    <x-filament::icon icon="heroicon-m-chevron-right" 
+                                        class="w-4 h-4" 
+                                        x-bind:class="openRows.includes({{ $class->id }}) ? 'text-primary-600' : 'text-gray-400'" />
+                                </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">{{ $class->name }}</td>
-                        <td class="px-6 py-4 text-center text-gray-600 dark:text-gray-400">Grade {{ $class->grade }}</td>
-                        <td class="px-6 py-4 text-gray-600 dark:text-gray-400">{{ $class->major }}</td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-col items-center justify-center gap-1" x-on:click.stop="">
-                                {{-- Logika Wali Kelas --}}
-                                @if(isset($class->homeroom_teacher))
-                                <div class="flex items-center gap-2">
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($class->homeroom_teacher) }}&background=random" class="w-6 h-6 rounded-full shadow-sm">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {{ $class->homeroom_teacher }}
+
+                        {{-- Nama Kelas --}}
+                        <td class="px-6 py-5">
+                            <div class="flex flex-col">
+                                <span class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-primary-600 transition-colors">
+                                    {{ $class->name }}
+                                </span>
+                                <span class="text-xs text-gray-400">ID: #{{ $class->id }}</span>
+                            </div>
+                        </td>
+
+                        {{-- Jurusan --}}
+                        <td class="px-6 py-5 text-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700">
+                                {{ $class->department?->name ?? '-' }}
+                            </span>
+                        </td>
+
+                        {{-- Wali Kelas --}}
+                        <td class="px-6 py-5">
+                            <div class="flex flex-col items-center justify-center" x-on:click.stop="">
+                                @if(isset($class->homeroomTeacher?->name))
+                                <div class="flex items-center gap-3 p-1 pr-3 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($class->homeroomTeacher?->name) }}&background=random&color=fff" 
+                                         class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-900">
+                                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-200 line-clamp-1 max-w-[120px]">
+                                        {{ $class->homeroomTeacher?->name }}
                                     </span>
                                 </div>
                                 @else
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs italic text-danger-600 font-medium">
-                                        Belum ditugaskan
-                                    </span>
-                                    <x-filament::icon-button
-                                        icon="heroicon-m-plus-circle"
-                                        color="gray"
-                                        size="sm"
-                                        tooltip="Tambah Wali Kelas"
-                                        class="hover:text-primary-600 transition-colors" />
-                                </div>
+                                <span class="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-full border border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30">
+                                    <x-heroicon-m-exclamation-circle class="w-3 h-3" />
+                                    Belum ditugaskan
+                                </span>
                                 @endif
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-3" x-on:click.stop="">
-                                {{-- Tombol Lihat Siswa --}}
-                                <x-filament::button
-                                    color="gray"
-                                    icon="heroicon-m-users"
-                                    icon-alias="panels::widgets.account.logout-button"
-                                    size="sm"
-                                    variant="outline"
-                                    tag="a"
-                                    :href="\App\Filament\Pages\ViewSiswa::getUrl()"
-                                    class="text-xs font-bold uppercase tracking-wider transition-all hover:bg-gray-100 dark:hover:bg-gray-800">
-                                    Lihat Siswa
-                                </x-filament::button>
+
+                        {{-- Actions --}}
+                        <td class="px-6 py-5 rounded-r-xl text-right">
+                            <div class="flex items-center justify-end gap-2" x-on:click.stop="">
+                                <div class="flex bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-1">
+                                    <x-filament::icon-button icon="heroicon-m-pencil-square" color="warning" size="sm" wire:click="openEditClass({{ $class->id }})" tooltip="Edit Kelas"/>
+                                    <div class="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1 self-center"></div>
+                                    <x-filament::icon-button icon="heroicon-m-trash" color="danger" size="sm" wire:click="openDeleteClass({{ $class->id }})" tooltip="Hapus Kelas"/>
+                                </div>
+                                
+                                <a href="{{ \App\Filament\Pages\ViewSiswa::getUrl(['class' => $class->id]) }}" 
+                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-50 text-primary-600 hover:bg-primary-100 hover:scale-105 transition-all dark:bg-primary-900/30 dark:text-primary-400">
+                                    <x-filament::icon icon="heroicon-m-users" class="w-4 h-4" />
+                                </a>
                             </div>
                         </td>
                     </tr>
 
-                    {{-- SUBJECT DETAIL --}}
+                    {{-- SUBJECT DETAIL (EXPANDED ROW) --}}
                     <tr x-show="openRows.includes({{ $class->id }})" x-collapse.duration.500ms x-cloak>
-                        <td colspan="6" class="px-10 py-6 bg-gray-50/50 dark:bg-gray-950/20">
-                            <div class="grid grid-cols-1 gap-3">
-                                @foreach ($class->subjects as $subject)
-                                <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 group/item">
+                        <td colspan="5" class="p-0 border-none">
+                            <div class="mx-4 -mt-2 mb-6 p-6 bg-gray-50 dark:bg-gray-900/50 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl shadow-inner relative z-0">
+                                
+                                {{-- Header Bagian Modul --}}
+                                <div class="flex items-center gap-2 mb-4 text-gray-500">
+                                    <x-heroicon-o-squares-2x2 class="w-4 h-4" />
+                                    <span class="text-xs font-bold uppercase tracking-widest">Daftar Mata Pelajaran & Guru</span>
+                                </div>
 
-                                    {{-- Info Subjek (Ikon Kalkulator Oranye) --}}
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm
-                                                    {{ $subject->color === 'orange' ? 'bg-orange-500 text-white' : '' }}
-                                                    {{ $subject->color === 'blue' ? 'bg-blue-600 text-white' : '' }}
-                                                    {{ $subject->color === 'purple' ? 'bg-purple-600 text-white' : '' }}
-                                                    {{ $subject->color === 'green' ? 'bg-green-600 text-white' : '' }}
-                                                ">
-                                            <x-filament::icon :icon="$subject->icon" class="w-6 h-6" />
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-gray-900 dark:text-white leading-tight">{{ $subject->name }}</p>
-                                            <p class="text-xs text-gray-400 font-medium mt-0.5 uppercase tracking-tight">{{ $subject->code }}</p>
-                                        </div>
-                                    </div>
-
-                                    {{-- Sisi Kanan: Guru, Status & Edit --}}
-                                    <div class="flex items-center gap-10">
-                                        {{-- Guru Pengampu --}}
-                                        <div class="flex flex-col items-start min-w-[200px]">
-                                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">GURU PENGAMPU</span>
-                                            <div class="flex items-center gap-2">
-                                                @if($subject->teacher)
-                                                <div class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[10px] font-black text-gray-500 dark:text-gray-400 border border-white shadow-sm">
-                                                    {{-- Inisial SM/Nama --}}
-                                                    {{ collect(explode(' ', $subject->teacher))->map(fn($n) => substr($n, 0, 1))->take(2)->join('') }}
+                                {{-- Grid Layout untuk Modul --}}
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    @foreach ($class->modules as $module)
+                                    <div class="relative group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 hover:border-primary-200 dark:hover:border-primary-800">
+                                        
+                                        {{-- Top: Mapel Info --}}
+                                        <div class="flex justify-between items-start mb-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 text-white flex items-center justify-center shadow-lg shadow-primary-500/30">
+                                                    <span class="text-xs font-bold">{{ substr($module->title, 0, 2) }}</span>
                                                 </div>
-                                                <span class="text-sm font-medium text-gray-800 dark:text-gray-200 tracking-tight">
-                                                    {{ $subject->teacher }}
-                                                </span>
+                                                <div>
+                                                    <h4 class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1" title="{{ $module->title }}">
+                                                        {{ $module->title }}
+                                                    </h4>
+                                                    <p class="text-[10px] font-mono text-gray-400">{{ $module->code }}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            {{-- Status Badge (Pojok Kanan Atas Kartu) --}}
+                                            <div class="flex-shrink-0">
+                                                @if($module->pivot->teacher)
+                                                    <div class="w-2 h-2 bg-success-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
                                                 @else
-                                                <span class="text-xs italic text-danger-500 font-medium">Belum ditugaskan</span>
+                                                    <div class="w-2 h-2 bg-danger-500 rounded-full animate-pulse"></div>
                                                 @endif
                                             </div>
                                         </div>
 
-                                        {{-- Status Badge & Pencil Icon --}}
-                                        <div class="flex items-center gap-4">
-                                            <x-filament::badge color="success" size="sm" class="px-3 rounded-md uppercase font-bold text-[10px] border border-success-200">
-                                                {{ $subject->teacher ? 'ASSIGNED' : 'PENDING' }}
-                                            </x-filament::badge>
+                                        {{-- Divider --}}
+                                        <div class="h-px w-full bg-gray-100 dark:bg-gray-700 mb-3"></div>
 
-                                            <x-filament::icon-button
-                                                icon="heroicon-m-pencil-square"
-                                                size="sm"
-                                                color="gray"
-                                                class="text-gray-400 hover:text-primary-600 transition-colors" />
+                                        {{-- Bottom: Guru Info --}}
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-2">
+                                                @if($module->pivot->teacher)
+                                                    @php $teacherName = $module->pivot->teacher?->name; @endphp
+                                                    <div class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300 ring-1 ring-white dark:ring-gray-600">
+                                                        {{ substr($teacherName, 0, 1) }}
+                                                    </div>
+                                                    <span class="text-xs font-medium text-gray-600 dark:text-gray-300 truncate max-w-[100px]" title="{{ $teacherName }}">
+                                                        {{ explode(' ', $teacherName)[0] }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-[10px] text-danger-500 italic flex items-center gap-1">
+                                                        <x-heroicon-m-exclamation-triangle class="w-3 h-3" />
+                                                        Kosong
+                                                    </span>
+                                                @endif
+                                            </div>
+
+                                            <button wire:click="openTeacherModal('{{ $class->id }}', '{{ $module->id }}')" 
+                                                    class="text-gray-400 hover:text-primary-600 transition-colors p-1 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <x-heroicon-m-pencil-square class="w-4 h-4" />
+                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                                @endforeach
+                                    @endforeach
+                                </div> {{-- End Grid --}}
                             </div>
                         </td>
                     </tr>
@@ -180,6 +183,79 @@
                 </tbody>
             </table>
         </div>
-    </x-filament::section>
 
+        {{-- MODAL AREA (Style Diperhalus) --}}
+        <div x-data="{ isOpen: false }"
+             x-show="isOpen"
+             @open-teacher-modal.window="isOpen = true"
+             @close-teacher-modal.window="isOpen = false"
+             class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden p-4 md:inset-0 h-modal md:h-full"
+             style="display: none;">
+            
+            {{-- Backdrop Blur --}}
+            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" 
+                 x-show="isOpen"
+                 x-transition.opacity
+                 @click="isOpen = false"></div>
+
+            {{-- Modal Content --}}
+            <div x-show="isOpen"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10 overflow-hidden transform transition-all">
+
+                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800/50">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <x-heroicon-m-user-plus class="w-5 h-5 text-primary-500" />
+                        Tugaskan Guru
+                    </h3>
+                    <button @click="isOpen = false" type="button" class="text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full p-1 transition-colors">
+                        <x-heroicon-m-x-mark class="w-5 h-5" />
+                    </button>
+                </div>
+
+                <div class="p-6 space-y-5">
+                    <div class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-3 rounded-lg text-sm flex items-start gap-2">
+                        <x-heroicon-m-information-circle class="w-5 h-5 flex-shrink-0 mt-0.5" />
+                        <p>Silakan pilih guru pengampu yang sesuai untuk mata pelajaran ini.</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="teacher" class="block text-sm font-bold text-gray-700 dark:text-gray-300">Daftar Guru Tersedia</label>
+                        <div class="relative">
+                             <select id="teacher"
+                                wire:model="selectedTeacherId"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-500 focus:border-primary-500 block w-full p-3 pl-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-shadow focus:shadow-md">
+                                <option value="">-- Pilih Guru --</option>
+                                @foreach($teachers as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        @error('selectedTeacherId')
+                        <span class="flex items-center gap-1 text-xs text-danger-600 font-bold mt-1">
+                            <x-heroicon-m-exclamation-circle class="w-3 h-3" />
+                            {{ $message }}
+                        </span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end p-4 px-6 gap-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700">
+                    <button @click="isOpen = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
+                        Batal
+                    </button>
+                    <x-filament::button wire:click="saveTeacher" class="shadow-lg shadow-primary-500/30">
+                        Simpan Perubahan
+                    </x-filament::button>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </x-filament::page>

@@ -3,9 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/admin');
 });
-
 Route::get('/file/{path}', function ($path) {
 
     $file = storage_path('app/private/' . $path);

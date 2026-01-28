@@ -25,44 +25,59 @@
     </div>
 
     {{-- ================= FILTER BAR ================= --}}
-    <div class="flex items-center justify-between mb-6 pt-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pt-6 gap-4">
 
-        <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200">
-            Daftar Siswa
-        </h2>
+        {{-- Header Title Section (Dengan aksen dekoratif) --}}
+        <div class="relative">
+            <h2 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white pl-4 border-l-4 border-primary-500 rounded-sm">
+                {{-- Isi Judul Disini --}}
+                Daftar Tingkat
+            </h2>
+        </div>
 
-        <div class="flex items-center gap-2">
-            <span class="text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                </svg>
-            </span>
+        {{-- Filter Section (Floating Pill Style) --}}
+        <div class="relative group">
+            {{-- Background & Shadow Effect --}}
+            <div class="absolute -inset-0.5 bg-gradient-to-r from-gray-200 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-full blur opacity-50 group-hover:opacity-100 transition duration-200"></div>
 
-            <div class="relative">
+            <div class="relative flex items-center bg-white dark:bg-gray-900 rounded-full shadow-sm border border-gray-200 dark:border-gray-700 hover:border-primary-400 dark:hover:border-primary-500 transition-colors duration-300">
+
+                {{-- Icon Filter (Integrated inside) --}}
+                <div class="pl-4 text-primary-600 dark:text-primary-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                </div>
+
+                {{-- Separator Line --}}
+                <div class="h-4 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>
+
+                {{-- The Select Input --}}
                 <select
                     wire:model.live="tingkatFilter"
                     class="
                     appearance-none 
                     bg-transparent 
-                    border border-gray-200 dark:border-gray-700 
-                    text-gray-600 dark:text-gray-300 
-                    text-sm font-medium 
-                    rounded-lg 
-                    pl-3 pr-8 py-2 
-                    focus:ring-0 focus:border-primary-500 
+                    border-none
+                    text-gray-700 dark:text-gray-200 
+                    text-sm font-semibold 
+                    py-2.5 pr-10 pl-1
+                    rounded-r-full
+                    focus:ring-0 
                     cursor-pointer
-                    hover:border-gray-300 dark:hover:border-gray-600
-                    transition-colors
+                    w-full sm:w-auto
+                    outline-none
                 ">
-                    <option value="">Semua Tingkat</option>
+                    <option value="" class="font-normal">Semua Tingkat</option>
                     @foreach(\App\Models\Tingkat::orderBy('name')->get() as $tingkat)
-                    <option value="{{ $tingkat->id }}">
+                    <option value="{{ $tingkat->id }}" class="font-normal text-gray-900 dark:text-gray-100">
                         {{ $tingkat->name }}
                     </option>
                     @endforeach
                 </select>
 
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                {{-- Chevron Icon (Custom positioning) --}}
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 group-hover:text-primary-500 transition-colors">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>

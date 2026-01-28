@@ -37,17 +37,6 @@ class TeachersTable
                     ->searchable()
                     ->sortable(),
 
-                BadgeColumn::make('user.identifier')
-                    ->label('Status Login')
-                    ->formatStateUsing(function ($state) {
-                        return $state ? 'Aktif' : 'Belum Setup';
-                    })
-                    ->color(fn(string $state): string => match ($state) {
-                        'Aktif' => 'success',
-                        'Belum Setup' => 'warning',
-                        default => 'gray',
-                    }),
-
                 TextColumn::make('created_at')
                     ->label('Dibuat Pada')
                     ->dateTime('d-m-Y H:i')

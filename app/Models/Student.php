@@ -12,6 +12,7 @@ class Student extends Model
         'nisn',
         'user_id',
         'photo',
+        'tingkat_id',
         'department_id',
         'class_level',
         'class_level_id',
@@ -40,5 +41,10 @@ class Student extends Model
     public function department()
     {
         return $this->belongsTo(Departments::class);
+    }
+
+    public function tingkat()
+    {
+        return $this->belongsTo(Tingkat::class, 'tingkat_id');
     }
 }

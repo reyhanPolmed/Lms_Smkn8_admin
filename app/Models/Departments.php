@@ -16,6 +16,11 @@ class Departments extends Model
         return $this->hasMany(Modules::class, 'department_id');
     }
 
+    public function student_classes()
+    {
+        return $this->hasMany(StudentClass::class, 'department_id');
+    }
+
     public function headOfDepartment()
     {
         return $this->belongsTo(Teacher::class, 'head_department_id');

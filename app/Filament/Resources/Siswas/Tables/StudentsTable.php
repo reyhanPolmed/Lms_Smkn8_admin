@@ -42,16 +42,15 @@ class StudentsTable
                     ->searchable()
                     ->sortable(),
 
-                BadgeColumn::make('user.identifier')
-                    ->label('Status Login')
-                    ->formatStateUsing(function ($state) {
-                        return $state ? 'Aktif' : 'Belum Setup';
-                    })
-                    ->color(fn (string $state): string => match ($state) {
-                        'Aktif' => 'success',
-                        'Belum Setup' => 'warning',
-                        default => 'gray',
-                    }),
+                TextColumn::make('student_class.name')
+                    ->label('Kelas')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('tingkat.name')
+                    ->label('Tingkat')
+                    ->searchable()
+                    ->sortable(),
 
                 TextColumn::make('created_at')
                     ->label('Dibuat Pada')
