@@ -17,6 +17,7 @@ class ManageDepartmentClasses extends Page
     public $foto;
     public $name;
     public $description;
+    public $jurusanName;
 
     public $teacher_id;
     public $allTeachers;
@@ -65,6 +66,7 @@ public function mount(Department $department): void
 
         $this->name = $department->name;
         $this->description = $department->description;
+        $this->jurusanName = $department->title;
     }
 
     protected function getHeaderActions(): array
@@ -129,12 +131,12 @@ public function mount(Department $department): void
     public function save()
     {
         $this->validate([
-            'title' => 'required|min:3',
+            'jurusanName' => 'required|min:3',
             'description' => 'nullable',
         ]);
 
         $this->department->update([
-            'title' => $this->title,
+            'title' => $this->jurusanName,
             'description' => $this->description,
         ]);
 

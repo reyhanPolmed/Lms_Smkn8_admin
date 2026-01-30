@@ -10,8 +10,8 @@ class StudentClass extends Model
 {
     protected $fillable = [
         'name',
-        'level',
         'homeroom_teacher_id',
+        'tingkat_id',
         'department_id',
     ];
 
@@ -39,5 +39,10 @@ class StudentClass extends Model
     public function department()
     {
         return $this->belongsTo(Departments::class, 'department_id');
+
+        }
+    public function tingkat()
+    {
+        return $this->belongsTo(Tingkat::class, 'tingkat_id');
     }
 }

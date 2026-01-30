@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use App\Models\Modules as Department;
 use App\Models\Departments;
+use App\Models\Tingkat;
 use App\Models\StudentClass;
 use App\Models\ModuleStudentClass;
 use Filament\Actions\CreateAction;
@@ -135,6 +136,14 @@ class ViewKelas extends Page
                         ->options(Departments::pluck('name', 'id'))
                         ->searchable()
                         ->required(),
+
+                    Select::make('tingkat_id')
+                        ->label('Tingkat')
+                        ->options(Tingkat::pluck('name', 'id'))
+                        ->searchable()
+                        ->required(),
+
+                    
                 ])
 
                 ->successNotificationTitle('Kelas berhasil ditambahkan'),

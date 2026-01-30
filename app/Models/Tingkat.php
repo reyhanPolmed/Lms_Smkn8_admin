@@ -24,5 +24,10 @@ class Tingkat extends Model
     public function students()
     {
         return $this->hasMany(Student::class);
+
+        }
+    public function student_classes()
+    {
+        return $this->hasMany(StudentClass::class);
     }
 }

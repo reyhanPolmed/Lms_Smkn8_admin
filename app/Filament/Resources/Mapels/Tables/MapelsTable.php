@@ -45,12 +45,6 @@ class MapelsTable
                 TextColumn::make('tingkats.name')
                     ->label('Kelas')
                     ->badge(), // Menampilkan sebagai tags/badge kecil
-
-                // 5. Description
-                TextColumn::make('description')
-                    ->label('Deskripsi')
-                    ->limit(50) // Membatasi teks agar tidak kepanjangan di tabel
-                    ->wrap(), // Text turun ke bawah jika panjang// Text turun ke bawah jika panjang
             ])
             ->filters([
 

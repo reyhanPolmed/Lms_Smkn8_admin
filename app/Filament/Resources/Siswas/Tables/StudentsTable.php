@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Siswas\Tables;
 
+use App\Filament\Imports\StudentImporter;
+use Filament\Actions\ImportAction;
+use Filament\Actions\CreateAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\BadgeColumn;
@@ -60,6 +63,11 @@ class StudentsTable
             ])
             ->filters([
                 //
+            ])
+
+            ->headerActions([
+                ImportAction::make()
+                    ->importer(StudentImporter::class),
             ])
             ->recordActions([
                 EditAction::make(),

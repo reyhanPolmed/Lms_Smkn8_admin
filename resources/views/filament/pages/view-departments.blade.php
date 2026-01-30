@@ -93,7 +93,7 @@
         @php
         $slug = $dept->slug ?? Str::slug($dept->name ?? 'unknown');
         $theme = match($slug) {
-        'tata-boga', 'kuliner' => ['color' => 'orange', 'border' => 'border-orange-500', 'text' => 'text-orange-600', 'icon' => 'heroicon-o-cake'],
+        'tata-boga', 'kulinerr' => ['color' => 'orange', 'border' => 'border-orange-500', 'text' => 'text-orange-600', 'icon' => 'heroicon-o-cake'],
         'software-engineering', 'rpl', 'pplg' => ['color' => 'blue', 'border' => 'border-blue-500', 'text' => 'text-blue-600', 'icon' => 'heroicon-o-code-bracket'],
         'network-engineering', 'tjkt' => ['color' => 'purple', 'border' => 'border-purple-500', 'text' => 'text-purple-600', 'icon' => 'heroicon-o-wifi'],
         default => ['color' => 'gray', 'border' => 'border-gray-500', 'text' => 'text-gray-600', 'icon' => 'heroicon-o-academic-cap'],
@@ -106,7 +106,7 @@
 
             {{-- 1. HEADER IMAGE --}}
             <div class="relative h-44 w-full overflow-hidden bg-gray-200">
-                <img src="{{ $dept->image? asset('uploads/' . $dept->image): asset('placeholder.svg') }}"
+                <img src="{{ $dept->image? Storage::url($dept->image) : asset('placeholder.svg') }}"
                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     alt="{{ $dept->name }}">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
@@ -161,23 +161,34 @@
                     </div>
                 </div>
 
-                {{-- Actions --}}
-                <div class="mt-auto flex gap-2">
-                    <x-filament::button
-                        tag="a"
-                        color="gray"
-                        outline
-                        class="flex-1 justify-center"
-                        :href="\App\Filament\Pages\ManageModulesClasses::getUrl(['department' => $dept->id]) . ($tingkatFilter ? '?tingkat=' . $tingkatFilter : '')">
-                        Kelola
-                    </x-filament::button>
+                {{-- Actions Container --}}
+                <div class="mt-auto pt-4 flex items-stretch gap-3">
 
-                    <x-filament::button
-                        color="danger"
-                        icon="heroicon-m-trash"
-                        icon-alias="delete-button"
+                    {{-- 1. TOMBOL UTAMA (KELOLA) - Menggunakan Style Gradient Anda --}}
+                    <a href="{{ \App\Filament\Pages\ManageModulesClasses::getUrl(['department' => $dept->id]) . ($tingkatFilter ? '?tingkat=' . $tingkatFilter : '') }}"
+                        class="group/btn relative flex-1 flex items-center justify-between px-5 py-3 overflow-hidden rounded-xl bg-gradient-to-r from-primary-600 to-indigo-600 text-white shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/40 hover:-translate-y-0.5">
+
+                        {{-- Efek Kilau Putih --}}
+                        <div class="absolute inset-0 w-full h-full bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+
+                        <span class="relative text-sm font-bold tracking-wide">Lihat Mata Pelajaran</span>
+
+                        {{-- Icon dengan Circle Background --}}
+                        <div class="relative flex items-center justify-center w-6 h-6 rounded-full bg-white/20 group-hover/btn:bg-white/30 transition-colors">
+                            <x-heroicon-m-arrow-right class="w-3.5 h-3.5 transform group-hover/btn:translate-x-0.5 transition-transform text-white" />
+                        </div>
+                    </a>
+
+                    {{-- 2. TOMBOL HAPUS (Secondary) --}}
+                    <button
                         wire:click="confirmDelete({{ $dept->id }})"
-                        class="px-3" />
+                        class="group/delete relative flex items-center justify-center px-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-400 shadow-sm transition-all duration-300 hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 hover:shadow-md hover:-translate-y-0.5"
+                        title="Hapus Jurusan">
+
+                        <x-heroicon-m-trash class="w-5 h-5 transition-transform duration-300 group-hover/delete:scale-110" />
+
+                    </button>
+
                 </div>
             </div>
         </div>

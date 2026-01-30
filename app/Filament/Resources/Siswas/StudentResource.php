@@ -7,6 +7,7 @@ use App\Filament\Resources\Siswas\Pages\EditStudent;
 use App\Filament\Resources\Siswas\Pages\ListStudents;
 use App\Filament\Resources\Siswas\Schemas\StudentForm;
 use App\Filament\Resources\Siswas\Tables\StudentsTable;
+
 use App\Models\Student;
 use BackedEnum;
 use UnitEnum;
@@ -28,6 +29,7 @@ class StudentResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Pengguna';
 
     protected static ?string $recordTitleAttribute = 'name';
+
 
     public static function form(Schema $schema): Schema
     {

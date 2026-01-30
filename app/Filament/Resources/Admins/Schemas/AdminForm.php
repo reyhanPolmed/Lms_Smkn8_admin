@@ -44,21 +44,24 @@ class AdminForm
 
                 // 4. Input Password
                 TextInput::make('password')
-                    ->password()
-                    ->revealable() // Tombol mata untuk lihat password
-                    ->dehydrateStateUsing(fn(string $state): string => Hash::make($state)) // Hash password sebelum simpan
-                    ->dehydrated(fn(?string $state): bool => filled($state)) // Hanya simpan jika field diisi
-                    ->required(fn(string $operation): bool => $operation === 'create') // Wajib diisi saat Create, opsional saat Edit
-                    ->confirmed() // Mewajibkan adanya field password_confirmation
-                    ->label('Password'),
-
-                // 5. Input Konfirmasi Password
-                TextInput::make('password_confirmation')
+                    ->label('Password Baru')
                     ->password()
                     ->revealable()
-                    ->requiredWith('password') // Wajib jika password diisi
-                    ->dehydrated(false) // Field ini TIDAK boleh disimpan ke database
+                    ->dehydrated(fn($state) => filled($state)) // hanya kirim kalau diisi
+                    ->required(false)
+                    ->minLength(6)
+                    ->afterStateHydrated(fn($component) => $component->state('')) // kosongkan saat edit
+                    ->dehydrateStateUsing(fn($state) => Hash::make($state)),
+
+
+                TextInput::make('confirmPassword')
                     ->label('Konfirmasi Password')
+                    ->password()
+                    ->revealable()
+                    ->required(fn($operation) => $operation === 'create')
+                    ->hidden(fn($operation) => $operation === 'edit')
+                    ->same('password')
+                    ->placeholder('Ulangi password')
             ]);
     }
 }

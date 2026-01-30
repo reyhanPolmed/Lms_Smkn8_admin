@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Siswas\Schemas;
 use App\Models\StudentClass;
 use App\Models\Departments;
 use App\Models\Tingkat;
+use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
@@ -76,14 +77,14 @@ class StudentForm
             // AKUN LOGIN SISWA
             // =====================
             TextInput::make('password')
-                ->label('Password Login')
+                ->label('Password Baru')
                 ->password()
                 ->revealable()
-                ->required(fn($operation) => $operation === 'create')
-                ->hidden(fn($operation) => $operation === 'edit')
-                ->minLength(8)
-                ->maxLength(255)
-                ->placeholder('Minimal 8 karakter'),
+                ->dehydrated(fn($state) => filled($state)) // hanya kirim kalau diisi
+                ->required(false)
+                ->minLength(6)
+                ->afterStateHydrated(fn($component) => $component->state('')) // kosongkan saat edit
+                ->dehydrateStateUsing(fn($state) => Hash::make($state)),
 
             TextInput::make('confirmPassword')
                 ->label('Konfirmasi Password')
