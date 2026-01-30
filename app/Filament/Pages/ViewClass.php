@@ -47,17 +47,43 @@ class ViewKelas extends Page
         ];
     }
 
-
+    public $filterLevel = '';
+    public $filterDepartment = '';
     protected function getViewData(): array
     {
-        $classes = StudentClass::with([
-            'modules',
-            'homeroomTeacher',
-        ])->get();
+        // 1. Mulai Query Builder (jangan langsung ->get())
+        $query = StudentClass::query()
+            ->with([
+                'modules',
+                'homeroomTeacher',
+                'department', // Load department juga biar efisien
+                'tingkat'     // Load tingkat (jika ada relasinya)
+            ]);
+
+        // 2. Cek apakah user memilih filter
+        if ($this->filterLevel) {
+            // Logika: Cari kelas yang namanya diawali dengan filter (Contoh: "X" akan cari "X RPL", "X TKJ")
+            if ($this->filterLevel) {
+                $query->where('tingkat_id', $this->filterLevel);
+            }
+
+            // Filter Jurusan (NEW)
+            // OPSI ALTERNATIF: Jika ingin filter berdasarkan relasi tingkat_id (lebih akurat)
+            // Pastikan value di select blade adalah ID, bukan String "X"
+            // $query->where('tingkat_id', $this->filterLevel);
+        }
+        if ($this->filterDepartment) {
+            $query->where('department_id', $this->filterDepartment);
+        }
+
+        // 3. Eksekusi query
+        $classes = $query->get();
 
         $teachers = Teacher::pluck('name', 'id');
 
-        return compact('classes', 'teachers');
+        $departments = Departments::all();
+
+        return compact('classes', 'teachers', 'departments');
     }
 
     // Di dalam Class Filament Page Anda (misal: EditCourse.php)
@@ -143,7 +169,7 @@ class ViewKelas extends Page
                         ->searchable()
                         ->required(),
 
-                    
+
                 ])
 
                 ->successNotificationTitle('Kelas berhasil ditambahkan'),
@@ -209,6 +235,12 @@ class ViewKelas extends Page
 
                 Select::make('homeroom_teacher_id')
                     ->options(Teacher::pluck('name', 'id'))
+                    ->required(),
+
+                Select::make('tingkat_id')
+                    ->label('Tingkat')
+                    ->options(Tingkat::pluck('name', 'id'))
+                    ->searchable()
                     ->required(),
             ])
 

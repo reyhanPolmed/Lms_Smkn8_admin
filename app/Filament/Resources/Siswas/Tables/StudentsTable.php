@@ -9,10 +9,14 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Tables\Table;
+use Filament\Forms;
+use Illuminate\Support\Collection;
+use App\Models\Student;
 
 class StudentsTable
 {
@@ -45,11 +49,6 @@ class StudentsTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('student_class.name')
-                    ->label('Kelas')
-                    ->searchable()
-                    ->sortable(),
-
                 TextColumn::make('tingkat.name')
                     ->label('Tingkat')
                     ->searchable()
@@ -61,22 +60,57 @@ class StudentsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+
             ->filters([
-                //
+
+                /*
+    |--------------------------------------------------------------------------
+    | Filter Kelas
+    |--------------------------------------------------------------------------
+    */
+                \Filament\Tables\Filters\SelectFilter::make('class_level_id')
+                    ->label('Kelas')
+                    ->relationship('student_class', 'name')
+                    ->searchable()
+                    ->preload(),
+
             ])
 
             ->headerActions([
                 ImportAction::make()
                     ->importer(StudentImporter::class),
             ])
+
+            ->bulkActions([
+
+                BulkAction::make('naikKelas')
+                    ->label('Naik Kelas')
+                    ->icon('heroicon-o-arrow-up')
+                    ->color('success')
+                    ->requiresConfirmation()
+
+                    ->form([
+                        Forms\Components\Select::make('class_level_id')
+                            ->relationship('student_class', 'name')
+                            ->required(),
+
+                        Forms\Components\Select::make('tingkat_id')
+                            ->relationship('tingkat', 'name')
+                            ->required(),
+                    ])
+
+                    ->action(function (Collection $records, array $data) {
+                        Student::whereIn('id', $records->pluck('id'))
+                            ->update($data);
+                    }),
+
+                DeleteBulkAction::make(),
+
+            ])
+
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 }

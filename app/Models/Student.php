@@ -14,7 +14,6 @@ class Student extends Model
         'photo',
         'tingkat_id',
         'department_id',
-        'class_level',
         'class_level_id',
     ];
 

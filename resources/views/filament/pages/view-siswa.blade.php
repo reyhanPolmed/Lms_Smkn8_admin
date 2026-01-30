@@ -1,7 +1,7 @@
 <x-filament::page>
     <div class="space-y-6">
         
-        {{-- Header Section (Tetap Sama) --}}
+        {{-- Header Section --}}
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 to-indigo-700 p-8 shadow-lg">
             <div class="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
             <div class="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
@@ -13,12 +13,31 @@
                         Kelola data siswa, pantau status akademik, dan administrasi kelas dalam satu tampilan kartu yang ringkas.
                     </p>
                 </div>
-                <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20">
-                    <x-heroicon-m-users class="w-6 h-6 text-white" />
-                    <div class="flex flex-col">
-                        <span class="text-xs text-primary-200 font-bold uppercase tracking-wider">Total Siswa</span>
-                        <span class="text-xl font-bold text-white leading-none">{{ $students->count() }}</span>
+
+                {{-- AREA KANAN: Tombol Download & Total Siswa --}}
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    
+                    {{-- [BARU] Tombol Download CSV --}}
+                    <x-filament::button 
+                        wire:click="downloadCsv"
+                        wire:loading.attr="disabled"
+                        color="gray"
+                        class="bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white ring-0"
+                        icon="heroicon-m-arrow-down-tray"
+                    >
+                        <span wire:loading.remove wire:target="downloadCsv">Export CSV</span>
+                        <span wire:loading wire:target="downloadCsv">Memproses...</span>
+                    </x-filament::button>
+
+                    {{-- Total Siswa Badge (Existing) --}}
+                    <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20">
+                        <x-heroicon-m-users class="w-6 h-6 text-white" />
+                        <div class="flex flex-col">
+                            <span class="text-xs text-primary-200 font-bold uppercase tracking-wider">Total Siswa</span>
+                            <span class="text-xl font-bold text-white leading-none">{{ $students->count() }}</span>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -79,7 +98,7 @@
                                 {{-- Divider --}}
                                 <div class="w-full h-px bg-gray-100 dark:bg-gray-800 my-5"></div>
 
-                                {{-- Single Metric: Kelas (Dipusatkan karena Email dihapus) --}}
+                                {{-- Single Metric: Kelas --}}
                                 <div class="w-full">
                                     <div class="flex flex-col items-center justify-center p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-transparent group-hover:border-gray-200 dark:group-hover:border-gray-700 transition-colors">
                                         <span class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1">Kelas Saat Ini</span>
@@ -88,8 +107,6 @@
                                         </span>
                                     </div>
                                 </div>
-
-                                {{-- Tombol "Lihat Detail" SUDAH DIHAPUS DISINI --}}
                             </div>
                         </div>
                     @endforeach

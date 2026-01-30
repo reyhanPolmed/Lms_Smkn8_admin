@@ -1,14 +1,67 @@
 <x-filament::page>
     <div class="space-y-6">
-        
+
         {{-- Header Section dengan gaya minimalis --}}
         <div class="flex items-center justify-between px-1">
-            {{-- Slot untuk action tambahan jika diperlukan --}}
+
+            {{-- [BARU] Bagian Filter Combined --}}
+            {{-- Container Filter Floating / Pill Style --}}
+            <div class="flex items-center bg-white dark:bg-gray-900 rounded-full shadow-lg shadow-gray-200/50 dark:shadow-none border border-gray-200 dark:border-gray-700 p-1.5 transition-all duration-300 focus-within:ring-2 focus-within:ring-primary-500/50 focus-within:border-primary-500">
+
+                {{-- Icon Funnel (Visual Anchor) --}}
+                <div class="flex-shrink-0 pl-1 pr-1">
+                    <div class="w-8 h-8 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center">
+                        <x-heroicon-m-funnel class="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                    </div>
+                </div>
+
+                {{-- Filter 1: Tingkat --}}
+                <div class="relative group border-r border-gray-200 dark:border-gray-700 px-2">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider hidden sm:inline-block">Kelas</span>
+                    </div>
+                    <select wire:model.live="filterLevel"
+                        class="bg-transparent border-none text-gray-700 dark:text-gray-200 text-sm font-semibold focus:ring-0 cursor-pointer py-2 pl-2 sm:pl-12 pr-8 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors w-full sm:w-auto">
+                        <option value="">Semua</option>
+                        <option value="1">Kelas X</option>
+                        <option value="2">Kelas XI</option>
+                        <option value="3">Kelas XII</option>
+                    </select>
+                </div>
+
+                {{-- Filter 2: Jurusan --}}
+                <div class="relative group px-2 flex-grow">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                        <x-heroicon-m-academic-cap class="w-4 h-4 text-gray-400" />
+                    </div>
+                    <select wire:model.live="filterDepartment"
+                        class="bg-transparent border-none text-gray-700 dark:text-gray-200 text-sm font-semibold focus:ring-0 cursor-pointer py-2 pl-8 pr-8 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors w-full">
+                        <option value="">Semua Jurusan</option>
+                        {{-- Perbaikan loop sesuai format pluck('name', 'id') --}}
+                        @foreach($departments as $id => $department)
+                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Reset Button (Opsional: Muncul jika ada filter aktif) --}}
+                @if($filterLevel || $filterDepartment)
+                <button wire:click="$set('filterLevel', null); $set('filterDepartment', null)"
+                    class="flex-shrink-0 mr-1 p-1.5 rounded-full text-gray-400 hover:text-danger-500 hover:bg-danger-50 dark:hover:bg-danger-900/20 transition-all"
+                    title="Reset Filter">
+                    <x-heroicon-m-x-mark class="w-4 h-4" />
+                </button>
+                @endif
+
+            </div>
+
+            {{-- Slot kanan (kosong/opsional) --}}
+            <div></div>
         </div>
 
-        {{-- Container Table Custom --}}
-        <div class="overflow-x-auto pb-4" 
-             x-data="{ 
+        {{-- Container Table Custom (SISANYA TETAP SAMA SEPERTI KODE ASLI) --}}
+        <div class="overflow-x-auto pb-4"
+            x-data="{ 
                 openRows: [1], 
                 toggle(id) {
                     if (this.openRows.includes(id)) {
@@ -18,8 +71,9 @@
                     }
                 }
              }">
-            
+
             <table class="w-full text-left border-separate border-spacing-y-4 px-2">
+                {{-- ... (Kode Table Header dan Body tetap sama persis) ... --}}
                 <thead>
                     <tr class="text-xs font-bold tracking-wider text-slate-800 uppercase dark:bg-gray-800 dark:text-gray-300">
                         <th class="px-6 py-2 w-12 text-center"> </th>
@@ -32,21 +86,21 @@
 
                 <tbody class="text-sm">
                     @foreach ($classes as $class)
-                    
+
                     {{-- CLASS ROW (CARD STYLE) --}}
                     <tr x-on:click="toggle({{ $class->id }})"
                         class="group cursor-pointer transition-all duration-300 transform bg-white dark:bg-gray-900 shadow-sm hover:shadow-lg hover:-translate-y-1 rounded-xl border border-gray-200 dark:border-gray-800 relative z-10"
                         x-bind:class="openRows.includes({{ $class->id }}) 
-                                ? 'ring-2 ring-primary-500/50 dark:ring-primary-500/30' 
-                                : ''">
-                        
+                                        ? 'ring-2 ring-primary-500/50 dark:ring-primary-500/30' 
+                                        : ''">
+
                         {{-- Icon Chevron --}}
                         <td class="px-6 py-5 rounded-l-xl bg-gray-50/50 dark:bg-gray-800/50 group-hover:bg-white dark:group-hover:bg-gray-800 transition-colors">
                             <div class="flex justify-center transition-transform duration-500"
-                                 x-bind:class="openRows.includes({{ $class->id }}) ? 'rotate-90' : ''">
+                                x-bind:class="openRows.includes({{ $class->id }}) ? 'rotate-90' : ''">
                                 <div class="p-1 rounded-full bg-white dark:bg-gray-700 shadow-sm ring-1 ring-gray-900/5">
-                                    <x-filament::icon icon="heroicon-m-chevron-right" 
-                                        class="w-4 h-4" 
+                                    <x-filament::icon icon="heroicon-m-chevron-right"
+                                        class="w-4 h-4"
                                         x-bind:class="openRows.includes({{ $class->id }}) ? 'text-primary-600' : 'text-gray-400'" />
                                 </div>
                             </div>
@@ -74,8 +128,8 @@
                             <div class="flex flex-col items-center justify-center" x-on:click.stop="">
                                 @if(isset($class->homeroomTeacher?->name))
                                 <div class="flex items-center gap-3 p-1 pr-3 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($class->homeroomTeacher?->name) }}&background=random&color=fff" 
-                                         class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-900">
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($class->homeroomTeacher?->name) }}&background=random&color=fff"
+                                        class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-900">
                                     <span class="text-sm font-semibold text-gray-700 dark:text-gray-200 line-clamp-1 max-w-[120px]">
                                         {{ $class->homeroomTeacher?->name }}
                                     </span>
@@ -93,13 +147,13 @@
                         <td class="px-6 py-5 rounded-r-xl text-right">
                             <div class="flex items-center justify-end gap-2" x-on:click.stop="">
                                 <div class="flex bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-1">
-                                    <x-filament::icon-button icon="heroicon-m-pencil-square" color="warning" size="sm" wire:click="openEditClass({{ $class->id }})" tooltip="Edit Kelas"/>
+                                    <x-filament::icon-button icon="heroicon-m-pencil-square" color="warning" size="sm" wire:click="openEditClass({{ $class->id }})" tooltip="Edit Kelas" />
                                     <div class="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1 self-center"></div>
-                                    <x-filament::icon-button icon="heroicon-m-trash" color="danger" size="sm" wire:click="openDeleteClass({{ $class->id }})" tooltip="Hapus Kelas"/>
+                                    <x-filament::icon-button icon="heroicon-m-trash" color="danger" size="sm" wire:click="openDeleteClass({{ $class->id }})" tooltip="Hapus Kelas" />
                                 </div>
-                                
-                                <a href="{{ \App\Filament\Pages\ViewSiswa::getUrl(['class' => $class->id]) }}" 
-                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-50 text-primary-600 hover:bg-primary-100 hover:scale-105 transition-all dark:bg-primary-900/30 dark:text-primary-400">
+
+                                <a href="{{ \App\Filament\Pages\ViewSiswa::getUrl(['class' => $class->id]) }}"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-50 text-primary-600 hover:bg-primary-100 hover:scale-105 transition-all dark:bg-primary-900/30 dark:text-primary-400">
                                     <x-filament::icon icon="heroicon-m-users" class="w-4 h-4" />
                                 </a>
                             </div>
@@ -110,7 +164,7 @@
                     <tr x-show="openRows.includes({{ $class->id }})" x-collapse.duration.500ms x-cloak>
                         <td colspan="5" class="p-0 border-none">
                             <div class="mx-4 -mt-2 mb-6 p-6 bg-gray-50 dark:bg-gray-900/50 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl shadow-inner relative z-0">
-                                
+
                                 {{-- Header Bagian Modul --}}
                                 <div class="flex items-center gap-2 mb-4 text-gray-500">
                                     <x-heroicon-o-squares-2x2 class="w-4 h-4" />
@@ -121,7 +175,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     @foreach ($class->modules as $module)
                                     <div class="relative group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 hover:border-primary-200 dark:hover:border-primary-800">
-                                        
+
                                         {{-- Top: Mapel Info --}}
                                         <div class="flex justify-between items-start mb-4">
                                             <div class="flex items-center gap-3">
@@ -135,13 +189,13 @@
                                                     <p class="text-[10px] font-mono text-gray-400">{{ $module->code }}</p>
                                                 </div>
                                             </div>
-                                            
+
                                             {{-- Status Badge (Pojok Kanan Atas Kartu) --}}
                                             <div class="flex-shrink-0">
                                                 @if($module->pivot->teacher)
-                                                    <div class="w-2 h-2 bg-success-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                                                <div class="w-2 h-2 bg-success-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
                                                 @else
-                                                    <div class="w-2 h-2 bg-danger-500 rounded-full animate-pulse"></div>
+                                                <div class="w-2 h-2 bg-danger-500 rounded-full animate-pulse"></div>
                                                 @endif
                                             </div>
                                         </div>
@@ -153,23 +207,23 @@
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center gap-2">
                                                 @if($module->pivot->teacher)
-                                                    @php $teacherName = $module->pivot->teacher?->name; @endphp
-                                                    <div class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300 ring-1 ring-white dark:ring-gray-600">
-                                                        {{ substr($teacherName, 0, 1) }}
-                                                    </div>
-                                                    <span class="text-xs font-medium text-gray-600 dark:text-gray-300 truncate max-w-[100px]" title="{{ $teacherName }}">
-                                                        {{ explode(' ', $teacherName)[0] }}
-                                                    </span>
+                                                @php $teacherName = $module->pivot->teacher?->name; @endphp
+                                                <div class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300 ring-1 ring-white dark:ring-gray-600">
+                                                    {{ substr($teacherName, 0, 1) }}
+                                                </div>
+                                                <span class="text-xs font-medium text-gray-600 dark:text-gray-300 truncate max-w-[100px]" title="{{ $teacherName }}">
+                                                    {{ explode(' ', $teacherName)[0] }}
+                                                </span>
                                                 @else
-                                                    <span class="text-[10px] text-danger-500 italic flex items-center gap-1">
-                                                        <x-heroicon-m-exclamation-triangle class="w-3 h-3" />
-                                                        Kosong
-                                                    </span>
+                                                <span class="text-[10px] text-danger-500 italic flex items-center gap-1">
+                                                    <x-heroicon-m-exclamation-triangle class="w-3 h-3" />
+                                                    Kosong
+                                                </span>
                                                 @endif
                                             </div>
 
-                                            <button wire:click="openTeacherModal('{{ $class->id }}', '{{ $module->id }}')" 
-                                                    class="text-gray-400 hover:text-primary-600 transition-colors p-1 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+                                            <button wire:click="openTeacherModal('{{ $class->id }}', '{{ $module->id }}')"
+                                                class="text-gray-400 hover:text-primary-600 transition-colors p-1 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <x-heroicon-m-pencil-square class="w-4 h-4" />
                                             </button>
                                         </div>
@@ -184,29 +238,27 @@
             </table>
         </div>
 
-        {{-- MODAL AREA (Style Diperhalus) --}}
+        {{-- MODAL AREA TETAP SAMA (TIDAK BERUBAH) --}}
         <div x-data="{ isOpen: false }"
-             x-show="isOpen"
-             @open-teacher-modal.window="isOpen = true"
-             @close-teacher-modal.window="isOpen = false"
-             class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden p-4 md:inset-0 h-modal md:h-full"
-             style="display: none;">
-            
-            {{-- Backdrop Blur --}}
-            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" 
-                 x-show="isOpen"
-                 x-transition.opacity
-                 @click="isOpen = false"></div>
+            x-show="isOpen"
+            @open-teacher-modal.window="isOpen = true"
+            @close-teacher-modal.window="isOpen = false"
+            class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden p-4 md:inset-0 h-modal md:h-full"
+            style="display: none;">
 
-            {{-- Modal Content --}}
+            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity"
+                x-show="isOpen"
+                x-transition.opacity
+                @click="isOpen = false"></div>
+
             <div x-show="isOpen"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10 overflow-hidden transform transition-all">
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10 overflow-hidden transform transition-all">
 
                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800/50">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -227,7 +279,7 @@
                     <div class="space-y-2">
                         <label for="teacher" class="block text-sm font-bold text-gray-700 dark:text-gray-300">Daftar Guru Tersedia</label>
                         <div class="relative">
-                             <select id="teacher"
+                            <select id="teacher"
                                 wire:model="selectedTeacherId"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-500 focus:border-primary-500 block w-full p-3 pl-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-shadow focus:shadow-md">
                                 <option value="">-- Pilih Guru --</option>
