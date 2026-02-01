@@ -10,6 +10,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
 
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+
+
 class StudentForm
 {
     public static function getComponents(): array
@@ -36,9 +39,21 @@ class StudentForm
                 ->placeholder('Contoh: 1234567890'),
 
             FileUpload::make('photo')
+                ->label('Gambar')
                 ->image()
-                ->maxFiles(1)
-                ->directory('students'),
+                ->required()
+                ->saveUploadedFileUsing(function ($file) {
+
+                    // Gunakan helper function 'cloudinary()' huruf kecil
+                    $upload = Cloudinary::uploadApi()->upload(
+                        $file->getRealPath(),
+                        [
+                            'folder' => 'lms_smkn8medan'
+                        ]
+                    );
+
+                    return $upload['secure_url'];
+                }),
 
             Select::make('department_id')
                 ->label('Jurusan')
