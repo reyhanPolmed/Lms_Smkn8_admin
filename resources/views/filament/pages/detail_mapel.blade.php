@@ -28,8 +28,8 @@
                 {{-- Foto Wrapper (Dengan Fungsi Upload) --}}
                 <div class="relative flex-shrink-0">
                     <div class="w-32 h-32 rounded-3xl border-4 border-white dark:border-gray-900 shadow-2xl overflow-hidden bg-white relative z-10 group/photo">
-                        @if($record->foto)
-                        <img src="{{ $record->foto? Storage::url($record->foto) : asset('placeholder.svg') }}">
+                        @if($record->thumbnail)
+                        <img src="{{ $record->thumbnail? $record->thumbnail : asset('placeholder.svg') }}">
                         @else
                         <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
                             <x-heroicon-o-photo class="w-12 h-12" />

@@ -10,6 +10,9 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Tables\Table;
+use App\Filament\Imports\GuruImporter;
+use App\Models\Teacher;
+use Filament\Actions\ImportAction;
 
 class TeachersTable
 {
@@ -46,6 +49,12 @@ class TeachersTable
             ->filters([
                 //
             ])
+
+            ->headerActions([
+                ImportAction::make()
+                    ->importer(GuruImporter::class),
+            ])
+
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),

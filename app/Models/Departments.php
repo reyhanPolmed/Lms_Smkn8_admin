@@ -3,14 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Departments extends Model
+
 {
+
+    use SoftDeletes;
+
     protected $fillable = [
         'name',
         'image',
         'head_department_id',
     ];
+
     public function modules()
     {
         return $this->hasMany(Modules::class, 'department_id');

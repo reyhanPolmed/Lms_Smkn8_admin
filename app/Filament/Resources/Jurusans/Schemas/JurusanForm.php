@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class JurusanForm
 {
@@ -37,9 +38,21 @@ class JurusanForm
 
                 // 1. Input Foto (Sesuai dengan tabel sebelumnya)
                 FileUpload::make('image')
+                    ->label('Gambar')
                     ->image()
-                    ->maxFiles(1)
-                    ->directory('jurusan'),
+                    ->required()
+                    ->saveUploadedFileUsing(function ($file) {
+
+                        // Gunakan helper function 'cloudinary()' huruf kecil
+                        $upload = Cloudinary::uploadApi()->upload(
+                            $file->getRealPath(),
+                            [
+                                'folder' => 'lms_smkn8medan'
+                            ]
+                        );
+
+                        return $upload['secure_url'];
+                    }),
 
             ]);
     }

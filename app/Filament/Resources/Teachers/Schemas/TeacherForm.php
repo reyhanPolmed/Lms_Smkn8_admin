@@ -7,6 +7,7 @@ use Filament\Forms\Components\FileUpload;
 use App\Models\Departments;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Hash;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class TeacherForm
 {
@@ -34,9 +35,21 @@ class TeacherForm
                 ->placeholder('Contoh: 1234567890'),
 
             FileUpload::make('photo')
+                ->label('Gambar')
                 ->image()
-                ->maxFiles(1)
-                ->directory('teachers'),
+                ->required()
+                ->saveUploadedFileUsing(function ($file) {
+
+                    // Gunakan helper function 'cloudinary()' huruf kecil
+                    $upload = Cloudinary::uploadApi()->upload(
+                        $file->getRealPath(),
+                        [
+                            'folder' => 'lms_smkn8medan'
+                        ]
+                    );
+
+                    return $upload['secure_url'];
+                }),
 
             Select::make('department_id')
                 ->label('Jurusan')

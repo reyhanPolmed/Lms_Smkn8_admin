@@ -14,7 +14,8 @@ class ManageModulesClasses extends Page
     use WithFileUploads;
 
     protected string $view = 'filament.pages.manage-jurusan';
-
+    protected static ?string $title = 'Mata Pelajaran Aktif';
+    protected static ?string $navigationLabel = 'Jurusan & Mapel';
     protected static ?string $slug = 'modules/{department}/classes';
     protected static bool $shouldRegisterNavigation = false;
 
@@ -56,14 +57,14 @@ class ManageModulesClasses extends Page
 
         $this->allModules = Modules::query()
             ->where('department_id', $this->department->id)
-            
+
             // 2. Logika Filter (Hanya jalan jika ada ?tingkat=...)
             ->when($this->tingkat, function ($q) use ($ids) {
                 $q->whereHas('tingkats', function ($t) use ($ids) {
-                     $t->whereIn('tingkat_id', $ids);
+                    $t->whereIn('tingkat_id', $ids);
                 });
             })
-            
+
             ->with([
                 'teachers',
                 'classes',

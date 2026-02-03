@@ -26,7 +26,7 @@ class ManageDepartmentClasses extends Page
 
 
     // 1. Pastikan slug ini ada (seperti solusi sebelumnya)
-    protected static ?string $slug = 'departments/{department}/classes';
+    protected static ?string $slug = 'modules/{department}/detail';
 
     // 2. TAMBAHKAN INI: Agar tidak muncul di sidebar menu
     protected static bool $shouldRegisterNavigation = false;

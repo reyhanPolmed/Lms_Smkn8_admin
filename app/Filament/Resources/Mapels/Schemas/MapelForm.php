@@ -8,6 +8,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class MapelForm
 {
@@ -29,10 +30,21 @@ class MapelForm
                     ->required(),
 
                 FileUpload::make('thumbnail')
-                    ->image() // Membuat tampilan upload bulat (opsional)
-                    ->directory('thumbnails')
-                    ->maxFiles(1) // Folder penyimpanan
-                    ->label('Thumbnail Mata Pelajaran'),
+                    ->label('Gambar')
+                    ->image()
+                    ->required()
+                    ->saveUploadedFileUsing(function ($file) {
+
+                        // Gunakan helper function 'cloudinary()' huruf kecil
+                        $upload = Cloudinary::uploadApi()->upload(
+                            $file->getRealPath(),
+                            [
+                                'folder' => 'lms_smkn8medan'
+                            ]
+                        );
+
+                        return $upload['secure_url'];
+                    }),
 
                 Select::make('department_id')
                     ->label('Jurusan')

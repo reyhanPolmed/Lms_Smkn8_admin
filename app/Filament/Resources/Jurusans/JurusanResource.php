@@ -20,7 +20,7 @@ class JurusanResource extends Resource
 {
     protected static ?string $model = Departments::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
     protected static ?string $navigationLabel = 'Jurusan';
     protected static ?string $modelLabel = 'Jurusan';

@@ -13,9 +13,9 @@ class ViewDepartments extends Page
 {
     protected string $view = 'filament.pages.view-departments';
 
-    protected static ?string $navigationLabel = 'Overview';
+    protected static ?string $navigationLabel = 'Jurusan & Mapel';
 
-    protected static ?string $title = 'Overview';
+    protected static ?string $title = 'Jurusan & Mapel';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice;
 

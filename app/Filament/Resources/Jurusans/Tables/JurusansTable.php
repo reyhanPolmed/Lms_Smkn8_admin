@@ -18,6 +18,14 @@ class JurusansTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable() // bisa hide/show
+                    ->size('sm')
+                    ->color('gray'),
+
                 ImageColumn::make('image')
                     ->label('Foto')
                     ->circular()

@@ -27,8 +27,10 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            
             ->brandName('Sistem Administrator LMS')
             ->login()
+            
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -39,6 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\widgets')
             ->pages([
                 Dashboard::class,
                 \App\Filament\Pages\ManageModulesClasses::class,
@@ -46,10 +49,6 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Pages\ViewKelas::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
-            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
