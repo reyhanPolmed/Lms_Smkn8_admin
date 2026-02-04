@@ -204,29 +204,63 @@
                                         <div class="h-px w-full bg-gray-100 dark:bg-gray-700 mb-3"></div>
 
                                         {{-- Bottom: Guru Info --}}
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center gap-2">
-                                                @if($module->pivot->teacher)
-                                                @php $teacherName = $module->pivot->teacher?->name; @endphp
-                                                <div class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300 ring-1 ring-white dark:ring-gray-600">
-                                                    {{ substr($teacherName, 0, 1) }}
+                                        {{-- Bottom Section: Guru + Jadwal --}}
+                                        @php
+                                        $teacher = $module->pivot->teacher ?? null;
+
+                                        $moduleSchedules = collect($schedulesByClass[$class->id] ?? [])
+                                        ->filter(fn($s) =>
+                                        $s->moduleStudentClass->module_id == $module->id
+                                        );
+                                        @endphp
+
+                                        <div class="space-y-2">
+
+                                            {{-- Guru --}}
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center gap-2">
+
+                                                    @if($teacher)
+                                                    <div class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold">
+                                                        {{ substr($teacher->name, 0, 1) }}
+                                                    </div>
+
+                                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
+                                                        {{ $teacher->name }}
+                                                    </span>
+                                                    @else
+                                                    <span class="text-xs text-danger-500 italic">
+                                                        Belum ada guru
+                                                    </span>
+                                                    @endif
+
                                                 </div>
-                                                <span class="text-xs font-medium text-gray-600 dark:text-gray-300 truncate max-w-[100px]" title="{{ $teacherName }}">
-                                                    {{ explode(' ', $teacherName)[0] }}
-                                                </span>
-                                                @else
-                                                <span class="text-[10px] text-danger-500 italic flex items-center gap-1">
-                                                    <x-heroicon-m-exclamation-triangle class="w-3 h-3" />
-                                                    Kosong
-                                                </span>
-                                                @endif
+
+                                                <button
+                                                    wire:click="openTeacherModal('{{ $class->id }}', '{{ $module->id }}')"
+                                                    class="text-gray-400 hover:text-primary-600 transition-colors p-1 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                    <x-heroicon-m-pencil-square class="w-4 h-4" />
+                                                </button>
                                             </div>
 
-                                            <button wire:click="openTeacherModal('{{ $class->id }}', '{{ $module->id }}')"
-                                                class="text-gray-400 hover:text-primary-600 transition-colors p-1 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                <x-heroicon-m-pencil-square class="w-4 h-4" />
-                                            </button>
+                                            {{-- Jadwal --}}
+                                            <div class="flex flex-wrap gap-1">
+                                                @forelse($moduleSchedules as $s)
+                                                <span class="text-[10px] px-2 py-0.5 rounded-md bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
+                                                    {{ $s->hari->nama_hari }}
+                                                    {{ \Carbon\Carbon::parse($s->rentangJam->jam_mulai)->format('H:i') }}
+                                                    -
+                                                    {{ \Carbon\Carbon::parse($s->rentangJam->jam_selesai)->format('H:i') }}
+                                                </span>
+                                                @empty
+                                                <span class="text-[10px] text-gray-400 italic">
+                                                    Belum ada jadwal
+                                                </span>
+                                                @endforelse
+                                            </div>
+
                                         </div>
+
                                     </div>
                                     @endforeach
                                 </div> {{-- End Grid --}}
@@ -239,18 +273,29 @@
         </div>
 
         {{-- MODAL AREA TETAP SAMA (TIDAK BERUBAH) --}}
+        {{-- ========================= --}}
+        {{-- MODAL: Guru + Jadwal --}}
+        {{-- ========================= --}}
         <div x-data="{ isOpen: false }"
             x-show="isOpen"
             @open-teacher-modal.window="isOpen = true"
             @close-teacher-modal.window="isOpen = false"
-            class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden p-4 md:inset-0 h-modal md:h-full"
-            style="display: none;">
+            class="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style="display:none;">
 
-            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity"
-                x-show="isOpen"
-                x-transition.opacity
-                @click="isOpen = false"></div>
+            {{-- Overlay dengan Transisi Fade --}}
+            <div x-show="isOpen"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm"
+                @click="isOpen = false">
+            </div>
 
+            {{-- Modal Content dengan Transisi Scale --}}
             <div x-show="isOpen"
                 x-transition:enter="transition ease-out duration-300"
                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -258,56 +303,122 @@
                 x-transition:leave="transition ease-in duration-200"
                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10 overflow-hidden transform transition-all">
+                class="relative w-full max-w-lg bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden ring-1 ring-gray-900/5">
 
-                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800/50">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <x-heroicon-m-user-plus class="w-5 h-5 text-primary-500" />
-                        Tugaskan Guru
+                {{-- Header --}}
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800">
+                    <h3 class="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-white">
+                        <div class="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
+                            <x-heroicon-m-calendar-days class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                        </div>
+                        Atur Guru & Jadwal
                     </h3>
-                    <button @click="isOpen = false" type="button" class="text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full p-1 transition-colors">
-                        <x-heroicon-m-x-mark class="w-5 h-5" />
+
+                    <button @click="isOpen=false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <x-heroicon-m-x-mark class="w-6 h-6" />
                     </button>
                 </div>
 
-                <div class="p-6 space-y-5">
-                    <div class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-3 rounded-lg text-sm flex items-start gap-2">
-                        <x-heroicon-m-information-circle class="w-5 h-5 flex-shrink-0 mt-0.5" />
-                        <p>Silakan pilih guru pengampu yang sesuai untuk mata pelajaran ini.</p>
-                    </div>
+                {{-- Scrollable Content Area --}}
+                <div class="p-6 space-y-8">
 
+                    {{-- ================= --}}
+                    {{-- Guru --}}
+                    {{-- ================= --}}
                     <div class="space-y-2">
-                        <label for="teacher" class="block text-sm font-bold text-gray-700 dark:text-gray-300">Daftar Guru Tersedia</label>
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300 block">
+                            Guru Pengampu
+                        </label>
+
                         <div class="relative">
-                            <select id="teacher"
-                                wire:model="selectedTeacherId"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-500 focus:border-primary-500 block w-full p-3 pl-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-shadow focus:shadow-md">
+                            <select wire:model="selectedTeacherId"
+                                class="w-full rounded-xl border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 transition-shadow cursor-pointer py-2.5">
                                 <option value="">-- Pilih Guru --</option>
                                 @foreach($teachers as $id => $name)
                                 <option value="{{ $id }}">{{ $name }}</option>
                                 @endforeach
                             </select>
                         </div>
-
-                        @error('selectedTeacherId')
-                        <span class="flex items-center gap-1 text-xs text-danger-600 font-bold mt-1">
-                            <x-heroicon-m-exclamation-circle class="w-3 h-3" />
-                            {{ $message }}
-                        </span>
-                        @enderror
                     </div>
+
+                    {{-- ================= --}}
+                    {{-- Jadwal --}}
+                    {{-- ================= --}}
+                    <div class="space-y-4">
+
+                        <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Jadwal Mengajar
+                            </label>
+
+                            <button type="button"
+                                wire:click="addScheduleRow"
+                                class="group flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-primary-50 text-primary-600 hover:bg-primary-100 rounded-lg transition-colors dark:bg-primary-900/20 dark:text-primary-400 dark:hover:bg-primary-900/40">
+                                <x-heroicon-m-plus class="w-3.5 h-3.5" />
+                                <span>Tambah</span>
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            @if(empty($scheduleInputs))
+                            <div class="text-center py-6 text-sm text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-dashed border-gray-200 dark:border-gray-600">
+                                Belum ada jadwal yang diatur
+                            </div>
+                            @else
+                            @foreach($scheduleInputs as $i => $row)
+                            <div class="group flex items-center gap-3 animate-[fadeIn_0.3s_ease-out]" wire:key="schedule-{{ $i }}">
+
+                                {{-- Grid Layout untuk Input --}}
+                                <div class="grid grid-cols-2 gap-3 flex-1">
+                                    {{-- Hari --}}
+                                    <select wire:model="scheduleInputs.{{ $i }}.hari_id"
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                                        <option value="">Hari...</option>
+                                        @foreach($haris as $hari)
+                                        <option value="{{ $hari->id }}">{{ $hari->nama_hari }}</option>
+                                        @endforeach
+                                    </select>
+
+                                    {{-- Jam --}}
+                                    <select wire:model="scheduleInputs.{{ $i }}.rentang_jam_id"
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                                        <option value="">Jam...</option>
+                                        @foreach($rentangJams as $jam)
+                                        <option value="{{ $jam->id }}">{{ $jam->label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                {{-- Hapus --}}
+                                <button type="button"
+                                    wire:click="removeScheduleRow({{ $i }})"
+                                    class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all dark:hover:bg-red-900/20"
+                                    title="Hapus Baris">
+                                    <x-heroicon-m-trash class="w-5 h-5" />
+                                </button>
+                            </div>
+                            @endforeach
+                            @endif
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="flex items-center justify-end p-4 px-6 gap-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700">
-                    <button @click="isOpen = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
+                {{-- Footer --}}
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700">
+                    <button @click="isOpen=false"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700">
                         Batal
                     </button>
-                    <x-filament::button wire:click="saveTeacher" class="shadow-lg shadow-primary-500/30">
+
+                    <x-filament::button wire:click="saveTeacherAndSchedules" class="w-auto">
                         Simpan Perubahan
                     </x-filament::button>
                 </div>
+
             </div>
         </div>
+
 
     </div>
 </x-filament::page>

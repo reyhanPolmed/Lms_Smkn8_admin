@@ -30,18 +30,12 @@ class StudentForm
             TextInput::make('nisn')
                 ->label('NISN (Nomor Induk Siswa Nasional)')
                 ->required()
-                ->unique(
-                    table: 'students',
-                    column: 'nisn',
-                    ignoreRecord: true
-                )
                 ->maxLength(20)
                 ->placeholder('Contoh: 1234567890'),
 
             FileUpload::make('photo')
                 ->label('Gambar')
                 ->image()
-                ->required()
                 ->saveUploadedFileUsing(function ($file) {
 
                     // Gunakan helper function 'cloudinary()' huruf kecil

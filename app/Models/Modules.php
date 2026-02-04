@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Modules extends Model
 {
+    
     protected $table = 'modules';   // tambahkan biar jelas
 
     protected $fillable = [

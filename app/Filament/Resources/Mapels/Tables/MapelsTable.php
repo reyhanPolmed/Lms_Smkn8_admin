@@ -50,6 +50,7 @@ class MapelsTable
 
                 // Filter Jurusan (belongsTo)
                 SelectFilter::make('department_id')
+                    ->label('Jurusan')
                     ->relationship('department', 'name')
                     ->searchable()
                     ->preload(),

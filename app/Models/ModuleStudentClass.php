@@ -8,7 +8,7 @@ class ModuleStudentClass extends Pivot
 {
     protected $table = 'modules_student_class';
 
-    public $timestamps = false; // kalau pivot tidak ada created_at
+    public $timestamps = false;
 
     protected $fillable = [
         'student_class_id',
@@ -16,8 +16,21 @@ class ModuleStudentClass extends Pivot
         'teacher_id',
     ];
 
+    // ✅ guru
     public function teacher()
     {
         return $this->belongsTo(Teacher::class, 'teacher_id');
+    }
+
+    // ✅ modul
+    public function module()
+    {
+        return $this->belongsTo(Modules::class, 'module_id');
+    }
+
+    // 🔥 INI YANG PENTING (jadwal)
+    public function schedules()
+    {
+        return $this->hasMany(ModuleStudentClassSchedule::class, 'module_student_class_id');
     }
 }

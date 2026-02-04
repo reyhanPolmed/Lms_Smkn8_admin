@@ -40,7 +40,7 @@
                         <label class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white opacity-0 group-hover/photo:opacity-100 transition-all duration-300 cursor-pointer">
                             <x-heroicon-o-camera class="w-8 h-8 mb-1" />
                             <span class="text-[10px] font-bold uppercase">Ganti Foto</span>
-                            <input type="file" wire:model="foto" class="hidden" accept="image/*">
+                            <input type="file" wire:model="thumbnail" class="hidden" accept="image/*">
                         </label>
 
                         {{-- Loading State --}}

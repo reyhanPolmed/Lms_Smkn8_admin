@@ -7,6 +7,7 @@ use App\Models\Modules as Department;
 use App\Models\Departments;
 use App\Models\Tingkat;
 use App\Models\StudentClass;
+use App\Models\ModuleStudentClassSchedule;
 use App\Models\ModuleStudentClass;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\TextInput;
@@ -36,6 +37,9 @@ class ViewKelas extends Page
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     // protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    public $scheduleInputs = [];
+    public $haris;
+    public $rentangJams;
 
     public $selectedDepartment;
 
@@ -51,40 +55,58 @@ class ViewKelas extends Page
     public $filterDepartment = '';
     protected function getViewData(): array
     {
-        // 1. Mulai Query Builder (jangan langsung ->get())
+        // ========================
+        // Query kelas
+        // ========================
         $query = StudentClass::query()
             ->with([
                 'modules',
                 'homeroomTeacher',
-                'department', // Load department juga biar efisien
-                'tingkat'     // Load tingkat (jika ada relasinya)
+                'department',
+                'tingkat',
             ]);
 
-        // 2. Cek apakah user memilih filter
         if ($this->filterLevel) {
-            // Logika: Cari kelas yang namanya diawali dengan filter (Contoh: "X" akan cari "X RPL", "X TKJ")
-            if ($this->filterLevel) {
-                $query->where('tingkat_id', $this->filterLevel);
-            }
-
-            // Filter Jurusan (NEW)
-            // OPSI ALTERNATIF: Jika ingin filter berdasarkan relasi tingkat_id (lebih akurat)
-            // Pastikan value di select blade adalah ID, bukan String "X"
-            // $query->where('tingkat_id', $this->filterLevel);
+            $query->where('tingkat_id', $this->filterLevel);
         }
+
         if ($this->filterDepartment) {
             $query->where('department_id', $this->filterDepartment);
         }
 
-        // 3. Eksekusi query
         $classes = $query->get();
 
-        $teachers = Teacher::pluck('name', 'id');
 
+        // ========================
+        // Query jadwal (🔥 langsung dari schedules)
+        // ========================
+        $schedules = ModuleStudentClassSchedule::with([
+            'hari',
+            'rentangJam',
+            'moduleStudentClass.teacher',
+            'moduleStudentClass.module',
+        ])->get();
+
+
+        // ========================
+        // Group jadwal per kelas biar gampang dipakai di blade
+        // ========================
+        $schedulesByClass = $schedules->groupBy(
+            fn($s) => $s->moduleStudentClass->student_class_id
+        );
+
+
+        $teachers = Teacher::pluck('name', 'id');
         $departments = Departments::all();
 
-        return compact('classes', 'teachers', 'departments');
+        return compact(
+            'classes',
+            'teachers',
+            'departments',
+            'schedulesByClass'
+        );
     }
+
 
     // Di dalam Class Filament Page Anda (misal: EditCourse.php)
 
@@ -93,21 +115,35 @@ class ViewKelas extends Page
     public $selectedModuleId;  // Diset saat tombol pencil diklik
 
     // Method baru: Dipanggil saat tombol pencil diklik
-    public function openTeacherModal($classId, $moduleId)
-    {
-        $this->selectedClassId = $classId;
-        $this->selectedModuleId = $moduleId;
+public function openTeacherModal($classId, $moduleId)
+{
+    $this->selectedClassId = $classId;
+    $this->selectedModuleId = $moduleId;
 
-        // Reset pilihan guru sebelumnya (opsional, agar bersih)
-        $this->reset('selectedTeacherId');
+    $msc = ModuleStudentClass::with('schedules')
+        ->where('student_class_id', $classId)
+        ->where('module_id', $moduleId)
+        ->first();
 
-        // Jika data sudah ada sebelumnya, kita bisa load (opsional)
-        // $existing = ModuleStudentClass::where('...')->first();
-        // $this->selectedTeacherId = $existing?->teacher_id;
+    if ($msc) {
+        $this->selectedTeacherId = $msc->teacher_id;
 
-        // Dispatch event browser agar AlpineJS membuka modal
-        $this->dispatch('open-teacher-modal');
+        $this->scheduleInputs = $msc->schedules
+            ->map(fn($s) => [
+                'hari_id' => $s->hari_id,
+                'rentang_jam_id' => $s->rentang_jam_id
+            ])
+            ->toArray();
+    } else {
+        $this->scheduleInputs = [
+            ['hari_id' => '', 'rentang_jam_id' => '']
+        ];
     }
+
+    $this->dispatch('open-teacher-modal');
+}
+
+
 
     public function saveTeacher()
     {
@@ -223,6 +259,7 @@ class ViewKelas extends Page
                     'name' => $class->name,
                     'department_id' => $class->department_id,
                     'homeroom_teacher_id' => $class->homeroom_teacher_id,
+                    'tingkat_id' => $class->tingkat_id,
                 ]);
             })
 
@@ -230,17 +267,18 @@ class ViewKelas extends Page
                 TextInput::make('name')->required(),
 
                 Select::make('department_id')
+                    ->label('Jurusan')
                     ->options(Departments::pluck('name', 'id'))
                     ->required(),
 
                 Select::make('homeroom_teacher_id')
                     ->options(Teacher::pluck('name', 'id'))
+                    ->label('Wali Kelas')
                     ->required(),
 
                 Select::make('tingkat_id')
-                    ->label('Tingkat')
                     ->options(Tingkat::pluck('name', 'id'))
-                    ->searchable()
+                    ->label('Tingkat')
                     ->required(),
             ])
 
@@ -283,4 +321,85 @@ class ViewKelas extends Page
                 $this->dispatch('$refresh');
             });
     }
+
+    public function mount()
+    {
+        $this->haris = \App\Models\Hari::orderBy('id')->get();
+        $this->rentangJams = \App\Models\RentangJam::orderBy('jam_mulai')->get();
+
+        // default 1 baris
+        $this->scheduleInputs = [
+            ['hari_id' => '', 'rentang_jam_id' => '']
+        ];
+    }
+
+
+    public function addScheduleRow()
+    {
+        $this->scheduleInputs[] = [
+            'hari_id' => '',
+            'rentang_jam_id' => ''
+        ];
+    }
+
+
+    public function removeScheduleRow($index)
+    {
+        unset($this->scheduleInputs[$index]);
+        $this->scheduleInputs = array_values($this->scheduleInputs);
+    }
+
+public function saveTeacherAndSchedules()
+{
+    $this->validate([
+        'selectedTeacherId' => 'required|exists:teachers,id',
+    ]);
+
+    // simpan pivot guru
+    $msc = ModuleStudentClass::updateOrCreate(
+        [
+            'student_class_id' => $this->selectedClassId,
+            'module_id' => $this->selectedModuleId,
+        ],
+        [
+            'teacher_id' => $this->selectedTeacherId,
+        ]
+    );
+
+    /*
+    ===============================
+    FIX DOUBLE JADWAL SUPPORT
+    ===============================
+    */
+
+    // buang slot kosong
+    $rows = collect($this->scheduleInputs)
+        ->filter(fn($r) => $r['hari_id'] && $r['rentang_jam_id'])
+        ->unique(fn($r) => $r['hari_id'].'-'.$r['rentang_jam_id']); // cegah duplikat
+
+    // hapus jadwal lama
+    $msc->schedules()->delete();
+
+    // insert banyak jadwal
+    foreach ($rows as $row) {
+        $msc->schedules()->create([
+            'hari_id' => $row['hari_id'],
+            'rentang_jam_id' => $row['rentang_jam_id'],
+        ]);
+    }
+
+    Notification::make()
+        ->title('Guru & jadwal berhasil disimpan')
+        ->success()
+        ->send();
+
+    $this->dispatch('$refresh');
+    $this->dispatch('close-teacher-modal');
+
+    // reset
+    $this->scheduleInputs = [
+        ['hari_id' => '', 'rentang_jam_id' => '']
+    ];
+}
+
 }

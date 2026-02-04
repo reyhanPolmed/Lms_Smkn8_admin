@@ -84,7 +84,7 @@ public function mount(Department $department): void
 
         Department::where('id', $this->department->id)
             ->update([
-                'foto' => $path,
+                'image' => $path,
             ]);
 
         Notification::make()

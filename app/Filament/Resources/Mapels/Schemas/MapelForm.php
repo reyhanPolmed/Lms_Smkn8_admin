@@ -32,10 +32,9 @@ class MapelForm
                 FileUpload::make('thumbnail')
                     ->label('Gambar')
                     ->image()
-                    ->required()
-                    ->saveUploadedFileUsing(function ($file) {
+                    ->directory(null) // 🔥 penting (disable local path)
 
-                        // Gunakan helper function 'cloudinary()' huruf kecil
+                    ->saveUploadedFileUsing(function ($file) {
                         $upload = Cloudinary::uploadApi()->upload(
                             $file->getRealPath(),
                             [
