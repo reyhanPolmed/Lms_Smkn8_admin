@@ -89,20 +89,17 @@ class StudentForm
                 ->label('Password Baru')
                 ->password()
                 ->revealable()
-                ->dehydrated(fn($state) => filled($state)) // hanya kirim kalau diisi
-                ->required(false)
                 ->minLength(6)
-                ->afterStateHydrated(fn($component) => $component->state('')) // kosongkan saat edit
-                ->dehydrateStateUsing(fn($state) => Hash::make($state)),
+                ->dehydrated(fn($state) => filled($state)),
 
             TextInput::make('confirmPassword')
                 ->label('Konfirmasi Password')
                 ->password()
                 ->revealable()
-                ->required(fn($operation) => $operation === 'create')
-                ->hidden(fn($operation) => $operation === 'edit')
                 ->same('password')
-                ->placeholder('Ulangi password'),
+                ->required(fn($operation) => $operation === 'create')
+                ->visible(fn($operation) => $operation === 'create'),
+
 
             TextInput::make('user.identifier')
                 ->label('NISN (User)')

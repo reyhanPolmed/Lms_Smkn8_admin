@@ -23,6 +23,7 @@ class StudentImporter extends Importer
             ImportColumn::make('department_id'),
             ImportColumn::make('class_level_id'),
             ImportColumn::make('tingkat_id'),
+            ImportColumn::make('photo'),
         ];
     }
 

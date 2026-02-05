@@ -13,36 +13,12 @@ class RentangJam extends Model
         'jam_selesai',
     ];
 
-    protected $casts = [
-        'jam_mulai' => 'datetime:H:i',
-        'jam_selesai' => 'datetime:H:i',
-    ];
-
-    public $timestamps = true;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Relations
-    |--------------------------------------------------------------------------
-    */
-
-    // 1 jam punya banyak jadwal
-    public function schedules()
-    {
-        return $this->hasMany(
-            ModuleStudentClassSchedule::class,
-            'rentang_jam_id'
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Helper (biar enak tampil)
-    |--------------------------------------------------------------------------
-    */
+    // ❌ hapus casts (tidak perlu)
+    protected $casts = [];
 
     public function getLabelAttribute()
     {
-        return $this->jam_mulai . ' - ' . $this->jam_selesai;
+        return substr($this->jam_mulai, 0, 5) . ' - ' . substr($this->jam_selesai, 0, 5);
     }
 }
+
