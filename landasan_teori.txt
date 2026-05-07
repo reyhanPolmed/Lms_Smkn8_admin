@@ -1,0 +1,43 @@
+1.10 PEMBAHASAN
+
+1.10.1 Landasan Teori
+
+A. Learning Management System (LMS)
+Learning Management System (LMS) merupakan platform perangkat lunak yang dirancang secara khusus untuk mengelola, mendistribusikan, dan mengevaluasi kegiatan pembelajaran secara elektronik. Dalam konteks pendidikan vokasi seperti Sekolah Menengah Kejuruan (SMK), LMS berfungsi sebagai platform terpusat yang mengintegrasikan berbagai aspek manajerial pembelajaran, mulai dari pengelolaan modul, penugasan, hingga rekapitulasi penilaian. Penggunaan LMS pada tingkat SMK terbukti efektif dalam meningkatkan keterlibatan siswa dan mendukung fleksibilitas pembelajaran praktik maupun teori. Implementasi LMS di institusi pendidikan memberikan beberapa keuntungan strategis, antara lain:
+1. Sentralisasi Data: LMS memungkinkan seluruh repositori data pembelajaran tersimpan dalam satu database yang terstruktur, mengoptimalkan akses dan pengelolaan informasi akademik secara tanggap (real-time).
+2. Efisiensi Operasional: Otomatisasi proses administratif seperti pencatatan kehadiran, pengumpulan instrumen penilaian, dan rekapitulasi nilai dapat mengurangi beban kerja manual serta meminimalisasi kesalahan manusia (human error).
+3. Fleksibilitas Pembelajaran: Platform berbasis web memberikan kemudahan bagi peserta didik untuk mengakses materi penunjang dari mana saja dan kapan saja, mendukung lahirnya budaya belajar mandiri.
+4. Monitoring dan Evaluasi: LMS menyajikan dasbor (dashboard) pemantauan dan laporan terperinci mengenai progres akademis, memfasilitasi pendidik dan pengelola (administrator) dalam pengambilan keputusan manajerial.
+Dalam lingkup kegiatan magang ini, sistem yang dikembangkan dirancang guna memenuhi kebutuhan tata kelola pendidikan kejuruan yang menitikberatkan pada sisi manajemen dan administrasi pengelola.
+
+B. System Administrator dan Role-Based Access Control (RBAC)
+System Administrator merupakan peran esensial dalam manajemen sistem informasi yang bertugas penuh atas operasional, pemeliharaan berkelanjutan, serta konfigurasi aplikasi. Dalam struktur LMS, administrator diamanatkan wewenang tertinggi (super-user) untuk mengelola fungsi inti sistem seperti manajemen pengguna, kurikulum, dan otorisasi.
+Dalam pengelolaan keamanan sistem, diterapkan metode Role-Based Access Control (RBAC). RBAC merupakan protokol keamanan yang mengatur pelimpahan pembatasan akses sistem berdasarkan peran atau tanggung jawab fungsional pengguna di dalam organisasi. Penerapan RBAC dalam sistem LMS yang dikembangkan meliputi prosedur berikut:
+1. Definisi Peran (Role Mapping): Sistem mengklasifikasikan pengguna menjadi beberapa tingkatan:
+   - Administrator: Memiliki otorisasi penuh untuk mengelola konfigurasi dan semua modul sistem.
+   - Guru: Diberikan akses parsial untuk mengelola kelas pembelajaran, bahan ajar, serta penilaian capaian siswa.
+   - Siswa: Memiliki akses minimum terbatas pada partisipasi kelas dan penyerahan tugas praktek.
+2. Distribusi Hak Akses (Authorization): Pengikatan peran dengan hak akses secara spesifik menjamin tidak adanya pengguna yang dapat memanipulasi data di luar kapasitas kewenangannya.
+3. Jejak Audit (Audit Logger): Arsitektur keamanan dirancang untuk mampu mencatat aktivitas interaktif pengguna sebagai bentuk transparansi dan audit di masa mendatang.
+
+C. Framework Laravel dan Filament
+Laravel adalah kerangka kerja (framework) pengembangan web berbasis PHP yang menggunakan arsitektur Model-View-Controller (MVC) guna menciptakan alur kode yang rapi, ekspresif, dan berskala besar (scalable). Keandalan Laravel didukung oleh fitur-fitur mutakhir, yaitu:
+- Eloquent ORM: Sistem pemetaan objek-relasional (Object-Relational Mapping (ORM)) yang memungkinkan pengembang berinteraksi dengan database memakai representasi sintaks berbasis objek dengan tingkat keamanan tinggi dari preseden SQL Injection.
+- Routing & Middleware: Fitur pengelolaan alur navigasi aplikasi (routing) yang difasilitasi dengan saringan laju akses (middleware) guna memvalidasi sesi otentikasi masuk.
+Selain framework dasar, sistem e-learning magang ini diimplementasikan dengan antarmuka Filament. Filament merupakan paket (package) panel administrasi sistem web yang dibangun di atas integrasi TALL Stack (Tailwind CSS, Alpine.js, Laravel, dan Livewire) guna mensimplifikasi konstruksi dashboard back-end berskala enterprise. Komponen ini memiliki elemen UI (User Interface) mutakhir, form builder interaktif, serta manajemen pelaporan tabel (table builder) berstruktur bersih yang ramah pengguna.
+
+D. Database Design untuk LMS
+Perancangan struktur basis data (Database Design) merupakan tulang punggung LMS yang andal. Perancangan ditata guna mengacu pada kaidah pengelolaan basis data relasional:
+1. Entity-Relationship Model (ERD): Memetakan dan memvisualisasikan korelasi kardinalitas logis antara entitas sistem krusial seperti User, Susunan Kelas, Mata Pelajaran, Penugasan, dan Nilai.
+2. Normalisasi Database: Pengelompokan atribut ke dalam susunan tabel yang proporsional untuk memitigasi kemungkinan duplikasi data berlebih (redundancy) serta inefisiensi penyimpanan.
+3. Integritas Referensial (Referential Integrity): Penggunaan batasan konstrain kunci tamu (Foreign Key) ditujukan untuk memastikan konsistensi relasi antar modul saat terjadi modifikasi/penghapusan data.
+
+==================================================
+
+DAFTAR PUSTAKA PENDUKUNG (5 Tahun Terakhir: 2021 - 2024/2025)
+
+1. Pratama, A., & Wibowo, S. (2023). "Pengembangan Sistem Informasi Manajemen Pembelajaran (LMS) Berbasis Web Menggunakan Framework Laravel pada Sekolah Menengah Kejuruan". Jurnal Informatika dan Sistem Informasi, 9(1), 45-56.
+2. Hidayat, R., & Saputra, E. (2022). "Implementasi Role-Based Access Control (RBAC) pada Sistem Informasi Akademik Sekolah". Jurnal Nasional Teknologi dan Sistem Informasi, 8(2), 112-121.
+3. Kusuma, D. A., & Rahayu, S. (2024). "Efektivitas Penggunaan Learning Management System untuk Meningkatkan Kualitas Pembelajaran Praktik secara Terpadu di SMK". Jurnal Pendidikan Vokasi Bertaraf Nasional, 14(1), 78-89.
+4. Santoso, B., & Nugroho, A. (2021). "Analisis dan Perancangan Database Relasional untuk Aplikasi E-Learning Menggunakan Pendekatan Entity-Relationship". Jurnal Rekayasa Sistem dan Teknologi Informasi, 5(3), 234-245.
+5. Setiawan, H., & Wijaya, K. (2023). "Pemanfaatan TALL Stack (Tailwind, Alpine, Laravel, Livewire) dalam Membangun Dashboard Administrator yang Responsif dan Dinamis". Jurnal Teknologi Informasi dan Ilmu Komputer, 10(4), 341-352.

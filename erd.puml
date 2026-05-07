@@ -1,0 +1,192 @@
+@startuml ERD_Admin_LMS_SMKN8Medan
+
+' Configure styling
+skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 80
+skinparam entity {
+    BackgroundColor LightCyan
+    BorderColor DarkBlue
+    ArrowColor DarkSlateGray
+}
+
+title ERD Modul Administrator - LMS SMKN 8 Medan
+
+' ============================================================
+' ENTITY DEFINITIONS (sesuai lms_smk8_medan (6).sql)
+' ============================================================
+
+entity "users" as users {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  identifier : varchar(255)
+  * name : varchar(255)
+  nisn : varchar(255)
+  jurusan : varchar(255)
+  photo : varchar(255)
+  email : varchar(255)
+  email_verified_at : timestamp
+  * password : varchar(255)
+  remember_token : varchar(100)
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "teachers" as teachers {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  * user_id : bigint UNSIGNED <<FK>>
+  * name : varchar(255)
+  * nip : varchar(255)
+  photo : varchar(255)
+  department_id : bigint UNSIGNED <<FK>>
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "students" as students {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  user_id : bigint UNSIGNED <<FK>>
+  * name : varchar(255)
+  tingkat_id : bigint UNSIGNED <<FK>>
+  * nisn : varchar(255)
+  class_level_id : bigint UNSIGNED <<FK>>
+  department_id : bigint UNSIGNED <<FK>>
+  photo : varchar(255)
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "departments" as departments {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  * name : varchar(255)
+  head_department_id : bigint UNSIGNED <<FK>>
+  image : varchar(255)
+  created_at : timestamp
+  updated_at : timestamp
+  deleted_at : timestamp
+}
+
+entity "student_classes" as student_classes {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  department_id : bigint UNSIGNED <<FK>>
+  * name : varchar(255)
+  tingkat_id : bigint UNSIGNED <<FK>>
+  homeroom_teacher_id : bigint UNSIGNED <<FK>>
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "tingkat" as tingkat {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  * name : varchar(50)
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "modules" as modules {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  * title : varchar(255)
+  jurusan : varchar(255)
+  description : text
+  thumbnail : varchar(255)
+  department_id : bigint UNSIGNED <<FK>>
+  * is_active : tinyint(1) DEFAULT 0
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "haris" as haris {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  * nama_hari : varchar(20)
+  * urutan : int
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "rentang_jams" as rentang_jams {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  * jam_mulai : time
+  * jam_selesai : time
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+' ============================================================
+' PIVOT / JUNCTION TABLES
+' ============================================================
+
+entity "modules_student_class" as modules_student_class {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  * module_id : bigint UNSIGNED <<FK>>
+  teacher_id : bigint UNSIGNED <<FK>>
+  * student_class_id : bigint UNSIGNED <<FK>>
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "modules_tingkat" as modules_tingkat {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  * module_id : bigint UNSIGNED <<FK>>
+  * tingkat_id : bigint UNSIGNED <<FK>>
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "module_student_class_schedules" as module_student_class_schedules {
+  * id : bigint UNSIGNED <<PK>>
+  --
+  * module_student_class_id : bigint UNSIGNED <<FK>>
+  * hari_id : bigint UNSIGNED <<FK>>
+  * rentang_jam_id : bigint UNSIGNED <<FK>>
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+' ============================================================
+' RELATIONSHIPS
+' ============================================================
+
+' --- User ke Teacher / Student ---
+users ||--o{ teachers : user_id
+users ||--o{ students : user_id
+
+' --- Department ---
+departments ||--o{ teachers : department_id
+departments ||--o{ students : department_id
+departments ||--o{ student_classes : department_id
+departments ||--o{ modules : department_id
+departments }o--o| teachers : head_department_id
+
+' --- Tingkat ---
+tingkat ||--o{ student_classes : tingkat_id
+tingkat ||--o{ students : tingkat_id
+
+' --- Student Class ---
+student_classes }o--o| teachers : homeroom_teacher_id
+student_classes ||--o{ students : class_level_id
+
+' --- Modules Pivot ---
+modules ||--o{ modules_student_class : module_id
+student_classes ||--o{ modules_student_class : student_class_id
+teachers ||--o{ modules_student_class : teacher_id
+
+modules ||--o{ modules_tingkat : module_id
+tingkat ||--o{ modules_tingkat : tingkat_id
+
+' --- Jadwal (Schedule) ---
+modules_student_class ||--o{ module_student_class_schedules : module_student_class_id
+haris ||--o{ module_student_class_schedules : hari_id
+rentang_jams ||--o{ module_student_class_schedules : rentang_jam_id
+
+
+@enduml

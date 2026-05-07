@@ -1,0 +1,194 @@
+@startuml CD_LMS_SMKN8Medan
+title Class Diagram - LMS SMKN 8 Medan (Admin Module)
+
+skinparam class {
+    BackgroundColor #EFF6FF
+    BorderColor #3B82F6
+    ArrowColor #2563EB
+    HeaderBackgroundColor #BFDBFE
+    HeaderFontColor #1E3A8A
+    FontSize 12
+}
+skinparam defaultFontName Arial
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 60
+
+' ══════════════════════════════════════════
+'  CORE CLASSES
+' ══════════════════════════════════════════
+
+class User {
+    + id : int
+    + name : string
+    + email : string
+    + password : string
+    + nisn : string
+    + identifier : string
+    + photo : string
+    --
+    + teachers() : HasMany
+    + students() : HasMany
+}
+
+class Admin {
+    + id : int
+    + name : string
+    + email : string
+    + password : string
+    --
+}
+
+class Teacher {
+    + id : int
+    + user_id : int
+    + name : string
+    + nip : string
+    + department_id : int
+    + photo : string
+    --
+    + user() : BelongsTo
+    + department() : BelongsTo
+    + modules() : BelongsToMany
+    + studentClasses() : HasMany
+}
+
+class Student {
+    + id : int
+    + user_id : int
+    + name : string
+    + nisn : string
+    + department_id : int
+    + tingkat_id : int
+    + class_level_id : int
+    + photo : string
+    --
+    + user() : BelongsTo
+    + department() : BelongsTo
+    + studentClass() : BelongsTo
+}
+
+class Departments {
+    + id : int
+    + name : string
+    + head_department_id : int
+    + image : string
+    --
+    + teachers() : HasMany
+    + students() : HasMany
+    + studentClasses() : HasMany
+    + modules() : HasMany
+    + headDepartment() : BelongsTo
+}
+
+class StudentClass {
+    + id : int
+    + name : string
+    + department_id : int
+    + tingkat_id : int
+    + homeroom_teacher_id : int
+    --
+    + students() : HasMany
+    + modules() : BelongsToMany
+    + homeroomTeacher() : BelongsTo
+    + department() : BelongsTo
+    + tingkat() : BelongsTo
+}
+
+class Tingkat {
+    + id : int
+    + name : string
+    --
+    + students() : HasMany
+    + studentClasses() : HasMany
+    + modules() : BelongsToMany
+}
+
+class Modules {
+    + id : int
+    + title : string
+    + description : text
+    + thumbnail : string
+    + department_id : int
+    + is_active : boolean
+    --
+    + department() : BelongsTo
+    + classes() : BelongsToMany
+    + teachers() : BelongsToMany
+    + tingkats() : BelongsToMany
+}
+
+' ══════════════════════════════════════════
+'  PIVOT / JUNCTION CLASSES
+' ══════════════════════════════════════════
+
+class ModuleStudentClass {
+    + id : int
+    + module_id : int
+    + student_class_id : int
+    + teacher_id : int
+    --
+    + schedules() : HasMany
+}
+
+class ModuleStudentClassSchedule {
+    + id : int
+    + module_student_class_id : int
+    + hari_id : int
+    + rentang_jam_id : int
+}
+
+class Hari {
+    + id : int
+    + nama_hari : string
+    + urutan : int
+    --
+    + schedules() : HasMany
+}
+
+class RentangJam {
+    + id : int
+    + jam_mulai : time
+    + jam_selesai : time
+    --
+    + schedules() : HasMany
+}
+
+' ══════════════════════════════════════════
+'  RELATIONSHIPS
+' ══════════════════════════════════════════
+
+' User → Teacher / Student
+User "1" --o{ "0..*" Teacher : has
+User "1" --o{ "0..*" Student : has
+
+' Department
+Departments "1" --o{ "0..*" Teacher      : contains
+Departments "1" --o{ "0..*" Student      : contains
+Departments "1" --o{ "0..*" StudentClass : contains
+Departments "1" --o{ "0..*" Modules      : contains
+Departments "0..1" --o| "1" Teacher      : head_department
+
+' Tingkat
+Tingkat "1" --o{ "0..*" Student      : levels
+Tingkat "1" --o{ "0..*" StudentClass : levels
+
+' StudentClass
+StudentClass "1"   --o{ "0..*" Student             : has
+StudentClass "0..1" --o| "1"  Teacher              : homeroom
+StudentClass }o--o{ Modules                         : modules_student_class
+
+' Modules Pivot
+Modules      "1" --o{ "0..*" ModuleStudentClass : allocated_to
+StudentClass "1" --o{ "0..*" ModuleStudentClass : has_module
+Teacher      "1" --o{ "0..*" ModuleStudentClass : teaches
+
+' Tingkat Pivot
+Modules "1" --o{ "0..*" Tingkat : modules_tingkat
+
+' Schedule
+ModuleStudentClass         "1" --o{ "0..*" ModuleStudentClassSchedule : has
+Hari                       "1" --o{ "0..*" ModuleStudentClassSchedule : scheduled_on
+RentangJam                 "1" --o{ "0..*" ModuleStudentClassSchedule : time_slot
+
+@enduml

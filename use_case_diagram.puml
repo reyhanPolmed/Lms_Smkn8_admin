@@ -1,0 +1,123 @@
+@startuml use_case_diagram_admin
+left to right direction
+
+' ==========================================
+' STYLING AGAR RAPI & MUDAH DIBACA
+' ==========================================
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+    BackgroundColor LightCyan
+    BorderColor DarkBlue
+    ArrowColor DarkSlateGray
+    FontName Arial
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkGoldenRod
+}
+
+title Use Case Diagram Modul Administrator - LMS SMKN 8 Medan
+
+' ==========================================
+' ACTOR
+' ==========================================
+actor "Administrator" as Admin
+
+rectangle "Sistem LMS - Modul Administrasi" {
+    
+    ' ------------------------------------------
+    ' Otentikasi
+    ' ------------------------------------------
+    usecase "Login" as UC_Login
+    usecase "Otentikasi Kredensial" as UC_Auth
+    usecase "Logout" as UC_Logout
+    
+    ' ------------------------------------------
+    ' Manajemen Data Master
+    ' ------------------------------------------
+    usecase "Mengelola Data Master" as UC_Master
+    usecase "Kelola Data Jurusan" as UC_Jurusan
+    usecase "Kelola Tingkat Kelas" as UC_Tingkat
+    usecase "Kelola Waktu (Hari & Jam)" as UC_Waktu
+    
+    ' ------------------------------------------
+    ' Manajemen Pengguna
+    ' ------------------------------------------
+    usecase "Mengelola Data Pengguna" as UC_User
+    usecase "Kelola Data Guru" as UC_Guru
+    usecase "Kelola Data Siswa" as UC_Siswa
+    usecase "Validasi Data Input" as UC_Validasi
+    
+    ' ------------------------------------------
+    ' Manajemen Akademik / Kelas (Rombel)
+    ' ------------------------------------------
+    usecase "Mengelola Data Kelas" as UC_Kelas
+    usecase "Set Wali Kelas" as UC_WaliKelas
+    usecase "Set Siswa per Kelas" as UC_AssignSiswa
+    
+    ' ------------------------------------------
+    ' Manajemen Modul & Jadwal Pelajaran
+    ' ------------------------------------------
+    usecase "Mengelola Modul Pembelajaran" as UC_Modul
+    usecase "Set Guru Pengampu Modul" as UC_AssignModul
+    usecase "Kelola Jadwal Pelajaran" as UC_Jadwal
+    
+}
+
+' ==========================================
+' RELATIONSHIPS: ACTOR -> USE CASE UTAMA
+' ==========================================
+Admin --> UC_Login
+Admin --> UC_Logout
+
+Admin --> UC_Master
+Admin --> UC_User
+Admin --> UC_Kelas
+Admin --> UC_Modul
+
+
+' ==========================================
+' RELATIONSHIPS: INCLUDE (Kondisi Wajib)
+' ==========================================
+' Semua Use Case Utama wajib melakukan Login terlebih dahulu
+UC_Master ..> UC_Login : <<include>>
+UC_User ..> UC_Login : <<include>>
+UC_Kelas ..> UC_Login : <<include>>
+UC_Modul ..> UC_Login : <<include>>
+UC_Logout ..> UC_Login : <<include>>
+
+' Login membutuhkan otentikasi
+UC_Login ..> UC_Auth : <<include>>
+
+' Validasi wajjib dilakukan ketika mengelola pengguna (opsional detail)
+UC_User ..> UC_Validasi : <<include>>
+
+
+' ==========================================
+' RELATIONSHIPS: EXTEND (Kondisi Pilihan/Sub-opsi)
+' ==========================================
+' --- Extend Data Master ---
+UC_Jurusan .up.> UC_Master : <<extend>>
+UC_Tingkat .up.> UC_Master : <<extend>>
+UC_Waktu .up.> UC_Master : <<extend>>
+
+' --- Extend Data Pengguna ---
+UC_Guru .up.> UC_User : <<extend>>
+UC_Siswa .up.> UC_User : <<extend>>
+
+' --- Extend Data Kelas ---
+UC_WaliKelas .up.> UC_Kelas : <<extend>>
+UC_AssignSiswa .up.> UC_Kelas : <<extend>>
+
+' --- Extend Data Modul ---
+UC_AssignModul .up.> UC_Modul : <<extend>>
+UC_Jadwal .up.> UC_AssignModul : <<extend>>
+
+note bottom of UC_Jadwal
+  Mengatur jadwal pelajaran hanya 
+  bisa dilakukan jika Modul dan Guru 
+  sudah di-setting untuk Kelas tertentu.
+end note
+
+@enduml

@@ -1,0 +1,178 @@
+@startuml AD_Full_Admin
+title Activity Diagram - Sistem LMS SMKN 8 Medan (Admin)
+
+skinparam activity {
+    BackgroundColor #EFF6FF
+    BorderColor #3B82F6
+    ArrowColor #2563EB
+    StartColor #1E40AF
+    EndColor #1E40AF
+    DiamondBackgroundColor #DBEAFE
+    DiamondBorderColor #2563EB
+    FontSize 12
+}
+skinparam defaultFontName Arial
+skinparam pageMargin 10
+skinparam maxMessageSize 120
+
+' ══════════════════════════════════
+'  LOGIN
+' ══════════════════════════════════
+start
+:Buka Aplikasi LMS;
+:Masukkan Email & Password;
+:Klik "Masuk";
+if (Kredensial valid?) then (Tidak)
+    :Tampilkan pesan error;
+    stop
+else (Ya)
+endif
+
+' ══════════════════════════════════
+'  DASHBOARD
+' ══════════════════════════════════
+:Redirect ke Dashboard;
+:Muat data statistik\n(Admin, Guru, Siswa, Jurusan);
+:Tampilkan widget & grafik;
+:Pilih menu dari sidebar;
+
+' ══════════════════════════════════
+'  MANAJEMEN ADMIN
+' ══════════════════════════════════
+partition "Manajemen Admin" {
+    if (Menu Admin dipilih?) then (Ya)
+        :Tampilkan daftar admin;
+        :Klik "Tambah Admin";
+        :Isi form (nama, email, password);
+        if (Email sudah terdaftar?) then (Ya)
+            :Tampilkan error "Email duplikat";
+        else (Tidak)
+            :Simpan data admin;
+            :Notifikasi sukses;
+        endif
+    else (Tidak)
+    endif
+}
+
+' ══════════════════════════════════
+'  MANAJEMEN JURUSAN
+' ══════════════════════════════════
+partition "Manajemen Jurusan" {
+    if (Menu Jurusan dipilih?) then (Ya)
+        :Tampilkan daftar jurusan;
+        if (Pilih aksi?) then (Tambah)
+            :Isi form (nama & kode jurusan);
+            :INSERT ke database;
+            :Notifikasi "Jurusan ditambahkan";
+        else if (Edit) then
+            :Pilih & ubah data jurusan;
+            :UPDATE di database;
+            :Notifikasi "Jurusan diperbarui";
+        else (Hapus)
+            if (Konfirmasi hapus?) then (Ya)
+                :DELETE dari database;
+                :Notifikasi "Jurusan dihapus";
+            else (Tidak)
+                :Batal;
+            endif
+        endif
+    else (Tidak)
+    endif
+}
+
+' ══════════════════════════════════
+'  MANAJEMEN MAPEL
+' ══════════════════════════════════
+partition "Manajemen Mapel" {
+    if (Menu Mapel dipilih?) then (Ya)
+        :Tampilkan daftar mapel;
+        :Klik "Tambah Mapel";
+        :Isi nama mapel & pilih jurusan;
+        if (Input valid?) then (Ya)
+            :INSERT ke tabel mapels;
+            :Notifikasi "Mapel ditambahkan";
+        else (Tidak)
+            :Tampilkan pesan validasi;
+        endif
+    else (Tidak)
+    endif
+}
+
+' ══════════════════════════════════
+'  MANAJEMEN SISWA
+' ══════════════════════════════════
+partition "Manajemen Siswa" {
+    if (Menu Siswa dipilih?) then (Ya)
+        :Tampilkan daftar siswa;
+        if (Pilih aksi?) then (Tambah)
+            :Isi form data siswa\n(nama, NISN, jurusan);
+            :INSERT ke tabel students & users;
+            :Notifikasi "Siswa ditambahkan";
+        else if (Edit) then
+            :Pilih & ubah data siswa;
+            :UPDATE di database;
+            :Notifikasi "Siswa diperbarui";
+        else (Hapus)
+            if (Konfirmasi hapus?) then (Ya)
+                :DELETE dari database;
+                :Notifikasi "Siswa dihapus";
+            else (Tidak)
+                :Batal;
+            endif
+        endif
+    else (Tidak)
+    endif
+}
+
+' ══════════════════════════════════
+'  MANAJEMEN GURU
+' ══════════════════════════════════
+partition "Manajemen Guru" {
+    if (Menu Guru dipilih?) then (Ya)
+        :Tampilkan daftar guru;
+        if (Pilih aksi?) then (Tambah)
+            :Isi form data guru\n(nama, NIP, mapel);
+            :INSERT ke tabel teachers & users;
+            :Notifikasi "Guru ditambahkan";
+        else (Edit)
+            :Pilih & ubah data guru;
+            :UPDATE di database;
+            :Notifikasi "Guru diperbarui";
+        endif
+    else (Tidak)
+    endif
+}
+
+' ══════════════════════════════════
+'  MANAJEMEN KELAS & MODUL
+' ══════════════════════════════════
+partition "Manajemen Kelas & Modul" {
+    if (Menu Kelas dipilih?) then (Ya)
+        :Tampilkan daftar kelas;
+        if (Filter per jurusan?) then (Ya)
+            :Tampilkan kelas sesuai jurusan;
+        else (Tidak)
+            :Tampilkan semua kelas;
+        endif
+        if (Alokasi modul ke kelas?) then (Ya)
+            :Pilih kelas & pilih modul;
+            if (Modul sudah ada di kelas?) then (Ya)
+                :Tampilkan error "Sudah dialokasikan";
+            else (Tidak)
+                :INSERT ke tabel pivot class_module;
+                :Notifikasi "Modul berhasil dialokasikan";
+            endif
+        else (Tidak)
+        endif
+    else (Tidak)
+    endif
+}
+
+' ══════════════════════════════════
+'  SELESAI
+' ══════════════════════════════════
+:Perubahan tersimpan ke database;
+:Kembali ke Dashboard;
+stop
+
+@enduml

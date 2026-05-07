@@ -1,0 +1,592 @@
+' ============================================================
+' SEQUENCE DIAGRAMS - LMS SMKN 8 MEDAN (Admin Module)
+' Total: 14 Diagram
+' ============================================================
+
+' ============================================================
+' 1. LOGIN (Autentikasi)
+' ============================================================
+@startuml SD_01_Login
+title SD-01: Login Admin
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ActorBorderColor #1E40AF
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+    NoteBackgroundColor #DBEAFE
+    NoteBorderColor #3B82F6
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Halaman Login" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "Auth Controller" as Auth
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Memasukkan email & password
+View -> Auth : POST /admin/login
+Auth -> DB : Query: cari user berdasarkan email
+DB --> Auth : Kembalikan data user
+
+alt [Kredensial Valid]
+    Auth --> View : Login berhasil
+    View --> Admin : Redirect ke Dashboard
+else [Kredensial Tidak Valid]
+    Auth --> View : Kembalikan pesan error
+    View --> Admin : Tampilkan "Email atau password salah"
+end
+
+@enduml
+
+
+' ============================================================
+' 2. DASHBOARD
+' ============================================================
+@startuml SD_02_Dashboard
+title SD-02: Menampilkan Dashboard
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Halaman Dashboard" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "Dashboard Controller" as DC
+    participant "Widget Service" as WS
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Akses /admin/dashboard
+View -> DC : GET /admin/dashboard
+DC -> WS : Minta data statistik
+WS -> DB : Query jumlah Admin, Guru, Siswa, Jurusan
+DB --> WS : Kembalikan agregat data
+WS --> DC : Kumpulkan data widget
+DC --> View : Render widget & grafik statistik
+View --> Admin : Tampilkan Dashboard (statistik & chart)
+
+@enduml
+
+
+' ============================================================
+' 3. MANAJEMEN ADMIN
+' ============================================================
+@startuml SD_03_Manajemen_Admin
+title SD-03: Tambah Admin Baru
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Form Tambah Admin" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "AdminResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Isi form (nama, email, password, role)
+View -> Ctrl : POST /admin/admins (data form)
+Ctrl -> DB : Cek apakah email sudah terdaftar
+
+alt [Email Unik]
+    Ctrl -> DB : INSERT ke tabel admins
+    DB --> Ctrl : Sukses tersimpan
+    Ctrl --> View : Notifikasi "Admin berhasil ditambahkan"
+    View --> Admin : Tampilkan pesan sukses & refresh tabel
+else [Email Duplikat]
+    DB --> Ctrl : Email sudah ada
+    Ctrl --> View : Kembalikan error validasi
+    View --> Admin : Tampilkan "Email sudah digunakan"
+end
+
+@enduml
+
+
+' ============================================================
+' 4. MANAJEMEN JURUSAN - Tambah
+' ============================================================
+@startuml SD_04_Tambah_Jurusan
+title SD-04: Tambah Jurusan
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Form Tambah Jurusan" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "JurusanResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Isi nama jurusan & kode
+View -> Ctrl : POST /admin/jurusans (data form)
+Ctrl -> Ctrl : Validasi input
+Ctrl -> DB : INSERT ke tabel departments
+DB --> Ctrl : Sukses tersimpan
+Ctrl --> View : Notifikasi "Jurusan berhasil ditambahkan"
+View --> Admin : Refresh tabel jurusan
+
+@enduml
+
+
+' ============================================================
+' 5. MANAJEMEN JURUSAN - Edit
+' ============================================================
+@startuml SD_05_Edit_Jurusan
+title SD-05: Edit Jurusan
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Form Edit Jurusan" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "JurusanResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Klik tombol Edit pada baris jurusan
+View -> Ctrl : GET /admin/jurusans/{id}/edit
+Ctrl -> DB : SELECT data jurusan berdasarkan ID
+DB --> Ctrl : Kembalikan data jurusan
+Ctrl --> View : Tampilkan form dengan data yang ada
+Admin -> View : Ubah data lalu klik Simpan
+View -> Ctrl : PUT /admin/jurusans/{id} (data baru)
+Ctrl -> Ctrl : Validasi input
+Ctrl -> DB : UPDATE tabel departments WHERE id = {id}
+DB --> Ctrl : Sukses diperbarui
+Ctrl --> View : Notifikasi "Jurusan berhasil diperbarui"
+View --> Admin : Refresh tabel jurusan
+
+@enduml
+
+
+' ============================================================
+' 6. MANAJEMEN JURUSAN - Hapus
+' ============================================================
+@startuml SD_06_Hapus_Jurusan
+title SD-06: Hapus Jurusan
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Tabel Jurusan" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "JurusanResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Klik tombol Hapus pada baris jurusan
+View --> Admin : Tampilkan dialog konfirmasi
+Admin -> View : Konfirmasi penghapusan
+View -> Ctrl : DELETE /admin/jurusans/{id}
+Ctrl -> DB : DELETE FROM departments WHERE id = {id}
+DB --> Ctrl : Sukses dihapus
+Ctrl --> View : Notifikasi "Jurusan berhasil dihapus"
+View --> Admin : Refresh tabel jurusan
+
+@enduml
+
+
+' ============================================================
+' 7. MANAJEMEN MAPEL - Tambah
+' ============================================================
+@startuml SD_07_Tambah_Mapel
+title SD-07: Tambah Mata Pelajaran (Mapel)
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Form Tambah Mapel" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "MapelResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Isi nama mapel & pilih jurusan
+View -> Ctrl : POST /admin/mapels (data form)
+Ctrl -> Ctrl : Validasi input
+Ctrl -> DB : INSERT ke tabel mapels
+DB --> Ctrl : Sukses tersimpan
+Ctrl --> View : Notifikasi "Mapel berhasil ditambahkan"
+View --> Admin : Refresh tabel mapel
+
+@enduml
+
+
+' ============================================================
+' 8. MANAJEMEN SISWA - Tambah (Manual)
+' ============================================================
+@startuml SD_08_Tambah_Siswa
+title SD-08: Tambah Siswa (Manual)
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Form Tambah Siswa" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "SiswaResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Isi data siswa (nama, NISN, jurusan, dll)
+View -> Ctrl : POST /admin/siswas (data form)
+Ctrl -> Ctrl : Validasi input
+Ctrl -> DB : INSERT ke tabel students & users
+DB --> Ctrl : Sukses tersimpan
+Ctrl --> View : Notifikasi "Siswa berhasil ditambahkan"
+View --> Admin : Refresh tabel siswa
+
+@enduml
+
+
+' ============================================================
+' 9. MANAJEMEN SISWA - Edit
+' ============================================================
+@startuml SD_09_Edit_Siswa
+title SD-09: Edit Data Siswa
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Form Edit Siswa" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "SiswaResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Klik tombol Edit pada baris siswa
+View -> Ctrl : GET /admin/siswas/{id}/edit
+Ctrl -> DB : SELECT data siswa berdasarkan ID
+DB --> Ctrl : Kembalikan data siswa
+Ctrl --> View : Tampilkan form dengan data yang ada
+Admin -> View : Ubah data lalu klik Simpan
+View -> Ctrl : PUT /admin/siswas/{id} (data baru)
+Ctrl -> DB : UPDATE tabel students WHERE id = {id}
+DB --> Ctrl : Sukses diperbarui
+Ctrl --> View : Notifikasi "Data siswa berhasil diperbarui"
+View --> Admin : Refresh tabel siswa
+
+@enduml
+
+
+' ============================================================
+' 10. MANAJEMEN SISWA - Hapus
+' ============================================================
+@startuml SD_10_Hapus_Siswa
+title SD-10: Hapus Data Siswa
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Tabel Siswa" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "SiswaResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Klik tombol Hapus pada baris siswa
+View --> Admin : Tampilkan dialog konfirmasi
+Admin -> View : Konfirmasi penghapusan
+View -> Ctrl : DELETE /admin/siswas/{id}
+Ctrl -> DB : DELETE FROM students WHERE id = {id}
+DB --> Ctrl : Sukses dihapus
+Ctrl --> View : Notifikasi "Siswa berhasil dihapus"
+View --> Admin : Refresh tabel siswa
+
+@enduml
+
+
+' ============================================================
+' 11. MANAJEMEN GURU - Tambah (Manual)
+' ============================================================
+@startuml SD_11_Tambah_Guru
+title SD-11: Tambah Guru (Manual)
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Form Tambah Guru" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "TeacherResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Isi data guru (nama, NIP, mapel, dll)
+View -> Ctrl : POST /admin/teachers (data form)
+Ctrl -> Ctrl : Validasi input
+Ctrl -> DB : INSERT ke tabel teachers & users
+DB --> Ctrl : Sukses tersimpan
+Ctrl --> View : Notifikasi "Guru berhasil ditambahkan"
+View --> Admin : Refresh tabel guru
+
+@enduml
+
+
+' ============================================================
+' 12. MANAJEMEN GURU - Edit
+' ============================================================
+@startuml SD_12_Edit_Guru
+title SD-12: Edit Data Guru
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Form Edit Guru" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "TeacherResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Klik tombol Edit pada baris guru
+View -> Ctrl : GET /admin/teachers/{id}/edit
+Ctrl -> DB : SELECT data guru berdasarkan ID
+DB --> Ctrl : Kembalikan data guru
+Ctrl --> View : Tampilkan form dengan data yang ada
+Admin -> View : Ubah data lalu klik Simpan
+View -> Ctrl : PUT /admin/teachers/{id} (data baru)
+Ctrl -> DB : UPDATE tabel teachers WHERE id = {id}
+DB --> Ctrl : Sukses diperbarui
+Ctrl --> View : Notifikasi "Data guru berhasil diperbarui"
+View --> Admin : Refresh tabel guru
+
+@enduml
+
+
+' ============================================================
+' 13. MANAJEMEN KELAS - Tampil & Kelola per Jurusan
+' ============================================================
+@startuml SD_13_Kelola_Kelas
+title SD-13: Menampilkan & Mengatur Kelas per Jurusan
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Halaman Kelas" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "ClassResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Buka menu Manajemen Kelas
+View -> Ctrl : GET /admin/classes
+Ctrl -> DB : SELECT kelas beserta jurusan
+DB --> Ctrl : Kembalikan daftar kelas
+Ctrl --> View : Tampilkan tabel kelas & filter jurusan
+Admin -> View : Filter kelas berdasarkan jurusan tertentu
+View -> Ctrl : GET /admin/classes?department={id}
+Ctrl -> DB : SELECT kelas WHERE department_id = {id}
+DB --> Ctrl : Kembalikan kelas terfilter
+Ctrl --> View : Render tabel kelas terfilter
+View --> Admin : Tampilkan daftar kelas sesuai jurusan
+
+@enduml
+
+
+' ============================================================
+' 14. MANAJEMEN KELAS - Alokasi Modul ke Kelas
+' ============================================================
+@startuml SD_14_Alokasi_Modul
+title SD-14: Alokasi Modul ke Kelas
+
+skinparam sequence {
+    ArrowColor #2563EB
+    ParticipantBorderColor #3B82F6
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #93C5FD
+}
+skinparam actorStyle awesome
+
+actor Admin
+
+box "Frontend" #F0F9FF
+    participant "Form Alokasi Modul" as View
+end box
+
+box "Backend (Filament)" #FFF7ED
+    participant "ClassResource" as Ctrl
+end box
+
+box "Database" #F0FDF4
+    database "DB" as DB
+end box
+
+Admin -> View : Pilih kelas & pilih modul/mapel yang akan dialokasikan
+View -> Ctrl : POST /admin/classes/{id}/modules (data alokasi)
+Ctrl -> DB : Cek apakah modul sudah dialokasikan ke kelas ini
+
+alt [Belum Dialokasikan]
+    Ctrl -> DB : INSERT ke tabel pivot (class_module)
+    DB --> Ctrl : Sukses tersimpan
+    Ctrl --> View : Notifikasi "Modul berhasil dialokasikan"
+    View --> Admin : Refresh daftar modul di kelas
+else [Sudah Dialokasikan]
+    DB --> Ctrl : Data duplikat ditemukan
+    Ctrl --> View : Kembalikan pesan error
+    View --> Admin : Tampilkan "Modul sudah ada di kelas ini"
+end
+
+@enduml

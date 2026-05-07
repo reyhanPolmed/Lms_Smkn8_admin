@@ -44,7 +44,6 @@ public function mount(Department $department): void
             'classes.students',
             'teachers',
         ])->loadCount([
-            'students',
             'teachers',
         ]);
 

@@ -1,0 +1,39 @@
+2.5.3 Implementasi Sistem
+Sistem e-learning (LMS) di SMKN 8 Medan diimplementasikan menggunakan framework PHP Laravel dan Filament Admin Panel yang mengadopsi struktur TALL stack (Tailwind CSS, Alpine.js, Laravel, dan Livewire).
+
+    2.5.3.1 Implementasi Basis Data
+    [Gambar 1: Struktur Tabel Basis Data (ERD)]
+    Deskripsi: Gambar ini menampilkan abstraksi desain Entity Relationship Diagram (ERD) basis data LMS SMKN 8 Medan. Implementasi tabel mencakup entitas utama seperti users, admins, teachers, students, departments (jurusan), dan modules/mapel. Sistem mengelola relasi kompleks antara siswa, guru, dan jurusan melalui tabel perantara (pivot table).
+
+    2.5.3.2 Implementasi Antarmuka
+    Antarmuka dirancang untuk mempermudah administrator dan pengguna berinteraksi dengan sistem secara efisien dan responsif.
+
+        1. Halaman Login
+        [Gambar 2: Halaman Login Sistem]
+        Deskripsi: Halaman ini merupakan antarmuka autentikasi awal. Menampilkan form input email/username dan kata sandi dengan validasi keamanan. Hanya pengguna yang terdaftar di basis data yang diizinkan untuk masuk ke sistem sesuai hak aksesnya.
+
+        2. Halaman Dashboard
+        [Gambar 3: Halaman Utama / Dashboard]
+        Deskripsi: Dashboard menampilkan ringkasan data atau metrik utama ketika pengguna pertama kali masuk. Pada halaman ini divisualisasikan informasi statistik sistem (seperti jumlah siswa, guru aktif, atau kelas) serta tautan cepat ke modul-modul lainnya.
+
+        3. Halaman Manajemen Pengguna
+        [Gambar 4: Antarmuka Modul Manajemen Pengguna]
+        Deskripsi: Halaman ini terdiri dari beberapa sub-modul yang memisahkan manajemen data untuk peran Admins, Teachers (Guru), dan Siswas (Siswa). Modul ini telah dilengkapi dengan fitur tabel data mutakhir, fungsi pencarian, pembuatan data (Create), dan pengeditan (Update/Delete) pengguna.
+
+        4. Halaman Manajemen Kurikulum
+        [Gambar 5: Antarmuka Modul Manajemen Kurikulum]
+        Deskripsi: Menampilkan modul untuk mengelola data Jurusan (Departments) dan Mata Pelajaran (Mapels). Administrator dapat mengatur alokasi pembelajaran dengan mengelola data jurusan serta merancang basis mata pelajaran terkait secara terpusat.
+
+2.5.4 Pengujian dan Evaluasi
+Tahap pengujian dilakukan dengan pendekatan pengujian fungsional (Black Box Testing) pada fitur-fitur panel Filament, mencakup manajemen basis data, otentikasi login, serta uji coba operasional CRUD (Create, Read, Update, Delete) di manajemen pengguna maupun kurikulum. Hasil evaluasi sistem menunjukkan bahwa semua modul beroperasi sesuai ekspektasi, proses rekam data berjalan lancar, dan manajemen state antarmuka cukup responsif.
+
+2.5.5 Kelebihan dan Keterbatasan Sistem
+- Kelebihan Sistem:
+  1. Pengembangan cepat dengan standar keamanan yang kuat, berkat pondasi ekosistem Laravel dan Filament panel.
+  2. UI/UX terlihat modern, bersih, intuitif, dan responsif (mendukung akses mobile dan desktop).
+  3. Fleksibilitas skalabilitas basis data untuk adaptasi kebutuhan kurikulum sekolah yang dinamis.
+
+- Keterbatasan Sistem:
+  1. Infrastruktur web application yang menggunakan komponen TALL stack membutuhkan spesifikasi/sumber daya server hosting yang lebih mumpuni dibanding aplikasi web sederhana.
+  2. Fokus saat ini lebih kepada administratif manajemen data sekolah (LMS) dan bukan fasilitas seperti kelas tatap muka sinkron (live streaming conference).
+  3. Mengharuskan pengguna memiliki koneksi internet yang konsisten untuk mengakses panel secara real-time di lingkungan SMKN 8 Medan.
