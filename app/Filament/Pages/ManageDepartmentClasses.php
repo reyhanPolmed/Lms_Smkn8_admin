@@ -55,7 +55,7 @@ public function mount(Department $department): void
         // Ambil kelas yang department_id-nya SAMA dengan department_id milik Module ini
         
         $this->allClasses = StudentClass::query()
-            ->where('department_id', $this->department->department_id) 
+            ->where('jurusan_id', $this->department->jurusan_id)
             ->with(['homeroomTeacher', 'students'])
             ->get();
 
@@ -63,7 +63,7 @@ public function mount(Department $department): void
 
         $this->allTeachers = Teacher::all();
 
-        $this->name = $department->name;
+        $this->name = $department->title;
         $this->description = $department->description;
         $this->jurusanName = $department->title;
     }
@@ -83,7 +83,7 @@ public function mount(Department $department): void
 
         Department::where('id', $this->department->id)
             ->update([
-                'image' => $path,
+                'thumbnail' => $path,
             ]);
 
         Notification::make()
@@ -135,8 +135,8 @@ public function mount(Department $department): void
         ]);
 
         $this->department->update([
-            'title' => $this->jurusanName,
-            'description' => $this->description,
+            'judul' => $this->jurusanName,
+            'deskripsi' => $this->description,
         ]);
 
         Notification::make()

@@ -25,7 +25,7 @@ class MapelsTable
                     ->label('Foto'),
 
                 // 2. Title (Judul Module)
-                TextColumn::make('title')
+                TextColumn::make('judul')
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
@@ -33,7 +33,7 @@ class MapelsTable
 
                 // 3. Department (Relasi BelongsTo)
                 // Asumsi: Di model Module ada fungsi 'department()'
-                TextColumn::make('department.name')
+                TextColumn::make('department.nama_jurusan')
                     ->label('Jurusan')
                     ->sortable()
                     ->badge() // Opsional: Memberikan background warna
@@ -49,9 +49,9 @@ class MapelsTable
             ->filters([
 
                 // Filter Jurusan (belongsTo)
-                SelectFilter::make('department_id')
+                SelectFilter::make('jurusan_id')
                     ->label('Jurusan')
-                    ->relationship('department', 'name')
+                    ->relationship('department', 'nama_jurusan')
                     ->searchable()
                     ->preload(),
 

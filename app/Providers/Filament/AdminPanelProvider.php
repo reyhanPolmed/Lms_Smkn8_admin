@@ -46,7 +46,7 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
                 \App\Filament\Pages\ManageModulesClasses::class,
                 \App\Filament\Pages\ViewDepartments::class,
-                \App\Filament\Pages\ViewKelas::class,
+                \App\Filament\Pages\ViewClass::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->middleware([

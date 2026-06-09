@@ -16,7 +16,7 @@ class MapelForm
     {
         return $schema
             ->components([
-                TextInput::make('title')
+                TextInput::make('judul')
                     ->label('Nama Mapel')
                     ->required(),
 
@@ -45,13 +45,13 @@ class MapelForm
                         return $upload['secure_url'];
                     }),
 
-                Select::make('department_id')
+                Select::make('jurusan_id')
                     ->label('Jurusan')
-                    ->options(Departments::pluck('name', 'id'))
+                    ->options(Departments::pluck('nama_jurusan', 'id'))
                     ->searchable()
                     ->required(),
 
-                Textarea::make('description')
+                Textarea::make('deskripsi')
                     ->label('Deskripsi')
                     ->rows(3),
             ]);

@@ -4,11 +4,12 @@ namespace App\Filament\Resources\Siswas\Schemas;
 
 use App\Models\StudentClass;
 use App\Models\Departments;
+use App\Models\Student;
 use App\Models\Tingkat;
-use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
+use Illuminate\Validation\Rule;
 
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
@@ -21,7 +22,7 @@ class StudentForm
             // =====================
             // DATA SISWA
             // =====================
-            TextInput::make('name')
+            TextInput::make('nama')
                 ->label('Nama Siswa')
                 ->required()
                 ->maxLength(255)
@@ -33,7 +34,22 @@ class StudentForm
                 ->maxLength(20)
                 ->placeholder('Contoh: 1234567890'),
 
-            FileUpload::make('photo')
+            TextInput::make('email')
+                ->label('Email Siswa')
+                ->email()
+                ->required()
+                ->maxLength(255)
+                ->unique(
+                    table: 'students',
+                    column: 'email',
+                    ignoreRecord: true
+                )
+                ->rules([
+                    fn (?Student $record) => Rule::unique('users', 'email')->ignore($record?->user_id),
+                ])
+                ->placeholder('Contoh: siswa@akara.sch.id'),
+
+            FileUpload::make('foto')
                 ->label('Gambar')
                 ->image()
                 ->saveUploadedFileUsing(function ($file) {
@@ -49,9 +65,9 @@ class StudentForm
                     return $upload['secure_url'];
                 }),
 
-            Select::make('department_id')
+            Select::make('jurusan_id')
                 ->label('Jurusan')
-                ->options(Departments::pluck('name', 'id'))
+                ->options(Departments::pluck('nama_jurusan', 'id'))
                 ->searchable()
                 ->required(),
 
@@ -68,9 +84,9 @@ class StudentForm
 
 
 
-            Select::make('class_level_id')
+            Select::make('kelas_id')
                 ->label('Kelas')
-                ->relationship('student_class', 'name')
+                ->relationship('student_class', 'nama_kelas')
                 ->searchable()
                 ->preload()
                 ->required()
@@ -89,6 +105,7 @@ class StudentForm
                 ->label('Password Baru')
                 ->password()
                 ->revealable()
+                ->required(fn (string $operation): bool => $operation === 'create')
                 ->minLength(6)
                 ->dehydrated(fn($state) => filled($state)),
 

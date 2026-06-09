@@ -90,12 +90,12 @@ class ViewDepartments extends Page
 
         // 1. Lepas kepala jurusan
         $dept->update([
-            'head_department_id' => null,
+            'kepala_jurusan_id' => null,
         ]);
 
         // 2. Pindahkan / null-kan siswa
         $dept->students()->update([
-            'department_id' => null, // atau pindah ke jurusan lain
+            'jurusan_id' => null, // atau pindah ke jurusan lain
         ]);
 
         // 3. Detach guru dari module

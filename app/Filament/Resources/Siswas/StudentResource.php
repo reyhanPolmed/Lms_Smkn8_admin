@@ -28,7 +28,7 @@ class StudentResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Pengguna';
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $recordTitleAttribute = 'nama';
 
 
     public static function form(Schema $schema): Schema

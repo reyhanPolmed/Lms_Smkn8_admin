@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Concerns\MapsLegacyAttributes;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,24 +11,50 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
+    use MapsLegacyAttributes;
+    use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
-        'identifier', // nip (nomor induk pegawai)
+        'identifier',
         'name',
         'email',
+        'email_verified',
         'password',
+        'photo',
+        'image',
+        'nisn',
+        'jurusan',
     ];
 
-    public function teacher()
+    protected array $attributeAliases = [
+        'image' => 'photo',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    public function teachers(): HasMany
     {
         return $this->hasMany(Teacher::class);
+    }
+
+    public function teacher(): HasMany
+    {
+        return $this->teachers();
+    }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class);
     }
 
     public function student()
@@ -35,36 +62,29 @@ class User extends Authenticatable
         return $this->hasOne(Student::class);
     }
 
+    public function accounts(): HasMany
+    {
+        return $this->hasMany(Account::class);
+    }
+
     public function getFilamentName(): string
     {
-        return $this->identifier;
+        return $this->name ?: $this->identifier ?: $this->email ?: (string) $this->getKey();
     }
 
-    public function canAccessPanel(\Filament\Panel $panel): bool
+    public function canAccessPanel(Panel $panel): bool
     {
-        return $this->role === 'admin';
-    }
+        $allowedEmails = array_filter(array_map('trim', explode(',', (string) env('FILAMENT_ADMIN_EMAILS', ''))));
+        $allowedIdentifiers = array_filter(array_map('trim', explode(',', (string) env('FILAMENT_ADMIN_IDENTIFIERS', ''))));
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+        if ($allowedEmails !== [] && in_array((string) $this->email, $allowedEmails, true)) {
+            return true;
+        }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        if ($allowedIdentifiers !== [] && in_array((string) $this->identifier, $allowedIdentifiers, true)) {
+            return true;
+        }
+
+        return ($this->role ?? null) === 'admin';
     }
 }

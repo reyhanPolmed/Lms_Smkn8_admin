@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RentangJam extends Model
 {
@@ -13,12 +14,13 @@ class RentangJam extends Model
         'jam_selesai',
     ];
 
-    // ❌ hapus casts (tidak perlu)
-    protected $casts = [];
-
-    public function getLabelAttribute()
+    public function schedules(): HasMany
     {
-        return substr($this->jam_mulai, 0, 5) . ' - ' . substr($this->jam_selesai, 0, 5);
+        return $this->hasMany(ModuleStudentClassSchedule::class, 'rentang_jam_id');
+    }
+
+    public function getLabelAttribute(): string
+    {
+        return substr((string) $this->jam_mulai, 0, 5) . ' - ' . substr((string) $this->jam_selesai, 0, 5);
     }
 }
-

@@ -23,7 +23,7 @@ use BackedEnum;
 
 use Filament\Support\Icons\Heroicon;
 
-class ViewKelas extends Page
+class ViewClass extends Page
 {
     protected string $view = 'filament.pages.view-classes';
 
@@ -71,7 +71,7 @@ class ViewKelas extends Page
         }
 
         if ($this->filterDepartment) {
-            $query->where('department_id', $this->filterDepartment);
+            $query->where('jurusan_id', $this->filterDepartment);
         }
 
         $classes = $query->get();
@@ -82,9 +82,9 @@ class ViewKelas extends Page
         // ========================
         $schedules = ModuleStudentClassSchedule::with([
             'hari',
-            'rentangJam',
             'moduleStudentClass.teacher',
             'moduleStudentClass.module',
+            'rentangJam',
         ])->get();
 
 
@@ -96,7 +96,7 @@ class ViewKelas extends Page
         );
 
 
-        $teachers = Teacher::pluck('name', 'id');
+        $teachers = Teacher::pluck('nama', 'id');
         $departments = Departments::all();
 
         return compact(
@@ -120,7 +120,7 @@ public function openTeacherModal($classId, $moduleId)
     $this->selectedClassId = $classId;
     $this->selectedModuleId = $moduleId;
 
-    $msc = ModuleStudentClass::with('schedules')
+    $msc = ModuleStudentClass::with('schedules.rentangJam')
         ->where('student_class_id', $classId)
         ->where('module_id', $moduleId)
         ->first();
@@ -131,12 +131,13 @@ public function openTeacherModal($classId, $moduleId)
         $this->scheduleInputs = $msc->schedules
             ->map(fn($s) => [
                 'hari_id' => $s->hari_id,
-                'rentang_jam_id' => $s->rentang_jam_id
+                'jam_mulai' => $s->rentangJam?->jam_mulai,
+                'jam_selesai' => $s->rentangJam?->jam_selesai,
             ])
             ->toArray();
     } else {
         $this->scheduleInputs = [
-            ['hari_id' => '', 'rentang_jam_id' => '']
+            ['hari_id' => '', 'jam_mulai' => '', 'jam_selesai' => '']
         ];
     }
 
@@ -182,20 +183,20 @@ public function openTeacherModal($classId, $moduleId)
 
                 ->form([
 
-                    TextInput::make('name')
+                    TextInput::make('nama_kelas')
                         ->label('Nama Kelas')
                         ->required()
                         ->maxLength(255),
 
                     Select::make('homeroom_teacher_id')
                         ->label('Wali Kelas')
-                        ->options(Teacher::pluck('name', 'id'))
+                        ->options(Teacher::pluck('nama', 'id'))
                         ->searchable()
                         ->required(),
 
-                    Select::make('department_id')
+                    Select::make('jurusan_id')
                         ->label('Jurusan')
-                        ->options(Departments::pluck('name', 'id'))
+                        ->options(Departments::pluck('nama_jurusan', 'id'))
                         ->searchable()
                         ->required(),
 
@@ -256,23 +257,23 @@ public function openTeacherModal($classId, $moduleId)
                 if (!$class) return;
 
                 $form->fill([
-                    'name' => $class->name,
-                    'department_id' => $class->department_id,
+                    'nama_kelas' => $class->nama_kelas,
+                    'jurusan_id' => $class->jurusan_id,
                     'homeroom_teacher_id' => $class->homeroom_teacher_id,
                     'tingkat_id' => $class->tingkat_id,
                 ]);
             })
 
             ->form([
-                TextInput::make('name')->required(),
+                TextInput::make('nama_kelas')->required(),
 
-                Select::make('department_id')
+                Select::make('jurusan_id')
                     ->label('Jurusan')
-                    ->options(Departments::pluck('name', 'id'))
+                    ->options(Departments::pluck('nama_jurusan', 'id'))
                     ->required(),
 
                 Select::make('homeroom_teacher_id')
-                    ->options(Teacher::pluck('name', 'id'))
+                    ->options(Teacher::pluck('nama', 'id'))
                     ->label('Wali Kelas')
                     ->required(),
 
@@ -325,11 +326,10 @@ public function openTeacherModal($classId, $moduleId)
     public function mount()
     {
         $this->haris = \App\Models\Hari::orderBy('id')->get();
-        $this->rentangJams = \App\Models\RentangJam::orderBy('jam_mulai')->get();
 
         // default 1 baris
         $this->scheduleInputs = [
-            ['hari_id' => '', 'rentang_jam_id' => '']
+            ['hari_id' => '', 'jam_mulai' => '', 'jam_selesai' => '']
         ];
     }
 
@@ -338,7 +338,8 @@ public function openTeacherModal($classId, $moduleId)
     {
         $this->scheduleInputs[] = [
             'hari_id' => '',
-            'rentang_jam_id' => ''
+            'jam_mulai' => '',
+            'jam_selesai' => ''
         ];
     }
 
@@ -372,19 +373,44 @@ public function saveTeacherAndSchedules()
     ===============================
     */
 
-    // buang slot kosong
+    // buang slot kosong & validasi waktu
+    $errors = [];
     $rows = collect($this->scheduleInputs)
-        ->filter(fn($r) => $r['hari_id'] && $r['rentang_jam_id'])
-        ->unique(fn($r) => $r['hari_id'].'-'.$r['rentang_jam_id']); // cegah duplikat
+        ->filter(function ($r, $idx) use (&$errors) {
+            if (!$r['hari_id'] || !$r['jam_mulai'] || !$r['jam_selesai']) {
+                return false;
+            }
+            if ($r['jam_selesai'] <= $r['jam_mulai']) {
+                $errors[] = "Baris ke-" . ($idx + 1) . ": Waktu selesai harus setelah waktu mulai";
+                return false;
+            }
+            return true;
+        })
+        ->unique(fn($r) => $r['hari_id'].'-'.$r['jam_mulai'].'-'.$r['jam_selesai']); // cegah duplikat
+
+    if ($errors) {
+        Notification::make()
+            ->title('Validasi Gagal')
+            ->body(implode("\n", $errors))
+            ->danger()
+            ->persistent()
+            ->send();
+        return;
+    }
 
     // hapus jadwal lama
     $msc->schedules()->delete();
 
     // insert banyak jadwal
     foreach ($rows as $row) {
+        $rentangJam = \App\Models\RentangJam::firstOrCreate([
+            'jam_mulai' => $row['jam_mulai'],
+            'jam_selesai' => $row['jam_selesai'],
+        ]);
+
         $msc->schedules()->create([
-            'hari_id' => $row['hari_id'],
-            'rentang_jam_id' => $row['rentang_jam_id'],
+            'hari_id'   => $row['hari_id'],
+            'rentang_jam_id' => $rentangJam->id,
         ]);
     }
 
@@ -398,7 +424,7 @@ public function saveTeacherAndSchedules()
 
     // reset
     $this->scheduleInputs = [
-        ['hari_id' => '', 'rentang_jam_id' => '']
+        ['hari_id' => '', 'jam_mulai' => '', 'jam_selesai' => '']
     ];
 }
 

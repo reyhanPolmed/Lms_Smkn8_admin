@@ -248,9 +248,9 @@
                                                 @forelse($moduleSchedules as $s)
                                                 <span class="text-[10px] px-2 py-0.5 rounded-md bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
                                                     {{ $s->hari->nama_hari }}
-                                                    {{ \Carbon\Carbon::parse($s->rentangJam->jam_mulai)->format('H:i') }}
-                                                    -
-                                                    {{ \Carbon\Carbon::parse($s->rentangJam->jam_selesai)->format('H:i') }}
+{{ \Carbon\Carbon::parse($s->jam_mulai)->format('H:i') }}
+                                                     -
+                                                     {{ \Carbon\Carbon::parse($s->jam_selesai)->format('H:i') }}
                                                 </span>
                                                 @empty
                                                 <span class="text-[10px] text-gray-400 italic">
@@ -380,13 +380,16 @@
                                     </select>
 
                                     {{-- Jam --}}
-                                    <select wire:model="scheduleInputs.{{ $i }}.rentang_jam_id"
-                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white">
-                                        <option value="">Jam...</option>
-                                        @foreach($rentangJams as $jam)
-                                        <option value="{{ $jam->id }}">{{ $jam->label }}</option>
-                                        @endforeach
-                                    </select>
+<div class="flex gap-2">
+    <input type="time"
+        wire:model="scheduleInputs.{{ $i }}.jam_mulai"
+        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+        placeholder="Waktu Mulai">
+    <input type="time"
+        wire:model="scheduleInputs.{{ $i }}.jam_selesai"
+        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+        placeholder="Waktu Selesai">
+</div>
                                 </div>
 
                                 {{-- Hapus --}}

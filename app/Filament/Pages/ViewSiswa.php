@@ -29,7 +29,7 @@ class ViewSiswa extends Page
         
         // B. Buat Slug Nama Kelas (agar spasi jadi strip, huruf kecil semua)
         // Jika kelas tidak ditemukan, default ke 'semua-siswa'
-        $namaKelasClean = $kelas ? Str::slug($kelas->name) : 'semua-siswa';
+        $namaKelasClean = $kelas ? Str::slug($kelas->nama_kelas) : 'semua-siswa';
 
         // 2. Buat nama file
         $fileName = 'daftar-siswa_' . $namaKelasClean . '_' . date('Y-m-d_H-i-s') . '.csv';
@@ -58,7 +58,7 @@ class ViewSiswa extends Page
             foreach ($data as $row) {
                 fputcsv($file, [
                     $row->id,
-                    $row->name,
+                    $row->nama,
                     $row->status,
                     $row->tingkat->name ?? '-', // Handle relasi null
                     $row->created_at?->format('d-m-Y') ?? '-',
@@ -96,9 +96,9 @@ class ViewSiswa extends Page
             return;
         }
 
-        // query siswa berdasarkan class_level_id
-        $this->students = Student::where('class_level_id', $this->classId)
-            ->orderBy('name')
+        // query siswa berdasarkan kelas_id
+        $this->students = Student::where('kelas_id', $this->classId)
+            ->orderBy('nama')
             ->get();
     }
 }

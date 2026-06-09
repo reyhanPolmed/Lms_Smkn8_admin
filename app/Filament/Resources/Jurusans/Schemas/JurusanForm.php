@@ -4,10 +4,7 @@ namespace App\Filament\Resources\Jurusans\Schemas;
 
 use App\Models\Teacher;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Facades\Hash;
-use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -23,21 +20,26 @@ class JurusanForm
 
 
                 // 2. Input Nama
-                TextInput::make('name')
+                TextInput::make('nama_jurusan')
                     ->required()
                     ->maxLength(255)
-                    ->label('Nama Lengkap'),
+                    ->label('Nama Jurusan'),
 
 
                 // 3. Input Kepala Jurusan
-                Select::make('head_department_id')
+                Select::make('kepala_jurusan_id')
                     ->label('Kepala jurusan')
-                    ->options(Teacher::pluck('name', 'id'))
+                    ->options(fn () => Teacher::query()
+                        ->orderBy('nama')
+                        ->pluck('nama', 'id')
+                        ->all())
                     ->searchable()
-                    ->required(),
+                    ->preload()
+                    ->nullable()
+                    ->helperText('Opsional saat membuat jurusan. Bisa diisi setelah data guru tersedia.'),
 
                 // 1. Input Foto (Sesuai dengan tabel sebelumnya)
-                FileUpload::make('image')
+                FileUpload::make('gambar')
                     ->label('Gambar')
                     ->image()
                     ->required()

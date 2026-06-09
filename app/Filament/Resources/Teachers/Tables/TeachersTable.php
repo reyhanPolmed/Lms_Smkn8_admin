@@ -20,7 +20,7 @@ class TeachersTable
     {
         return $table
             ->columns([
-                ImageColumn::make('photo')
+                ImageColumn::make('foto')
                     ->label('Foto')
                     ->circular()
                     ->default('/images/placeholder-student.png'),
@@ -30,12 +30,12 @@ class TeachersTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('name')
+                TextColumn::make('nama')
                     ->label('Nama Guru')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('department.name')
+                TextColumn::make('department.nama_jurusan')
                     ->label('Jurusan')
                     ->searchable()
                     ->sortable(),

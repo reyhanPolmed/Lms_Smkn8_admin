@@ -2,8 +2,10 @@
 
 namespace App\Filament\Imports;
 
+use App\Models\Account;
 use App\Models\User;
 use App\Models\Teacher;
+use App\Support\TeacherAuthCredentialSync;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
@@ -16,23 +18,44 @@ class GuruImporter extends Importer
     public static function getColumns(): array
     {
         return [
-            ImportColumn::make('name')->requiredMapping(),
+            ImportColumn::make('nama')->requiredMapping(),
             ImportColumn::make('nip')->requiredMapping(),
-            ImportColumn::make('department_id'),
+            ImportColumn::make('email'),
+            ImportColumn::make('jurusan_id'),
         ];
     }
 
         protected function beforeCreate(): void
     {
-        $user = User::firstOrCreate(
-            ['identifier' => $this->data['nip']],
-            [
-                'name' => $this->data['name'],
-                'password' => bcrypt($this->data['nip']),
-            ]
+        $user = User::firstOrNew([
+            'identifier' => $this->data['nip'],
+        ]);
+
+        $user->name = $this->data['nama'];
+        $user->email_verified = true;
+
+        if (filled($this->data['email'] ?? null)) {
+            $user->email = $this->data['email'];
+        }
+
+        if (! filled($user->password)) {
+            $user->password = bcrypt($this->data['nip']);
+        }
+
+        $user->save();
+
+        TeacherAuthCredentialSync::sync(
+            $user,
+            ! Account::query()
+                ->where('user_id', $user->id)
+                ->where('provider_id', 'credential')
+                ->exists()
+                ? $this->data['nip']
+                : null
         );
 
         $this->record->user_id = $user->id;
+        $this->record->email = $user->email;
     }
 
     public function resolveRecord(): Teacher

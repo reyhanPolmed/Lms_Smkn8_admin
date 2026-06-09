@@ -26,20 +26,20 @@ class JurusansTable
                     ->size('sm')
                     ->color('gray'),
 
-                ImageColumn::make('image')
+                ImageColumn::make('gambar')
                     ->label('Foto')
                     ->circular()
                     ->default('/images/placeholder-student.png'),
                 // 2. Kolom Nama
 
-                TextColumn::make('name')
+                TextColumn::make('nama_jurusan')
                     ->searchable() // Agar bisa dicari via search bar
                     ->sortable()   // Agar bisa diurutkan (A-Z)
                     ->weight('bold') // Membuat teks sedikit tebal
                     ->label('Jurusan'),
 
                 // 3. Kolom Email
-                TextColumn::make('headOfDepartment.name') // Menambah ikon amplop kecil
+                TextColumn::make('headOfDepartment.nama') // Menambah ikon amplop kecil
                     ->searchable() // Memudahkan admin menyalin email
                     ->label('Kepala Jurusan'),
             ])

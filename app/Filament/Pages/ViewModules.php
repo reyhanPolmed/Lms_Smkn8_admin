@@ -58,7 +58,7 @@ class ViewModules extends Page
 
                 ->form([
 
-                    TextInput::make('title')
+                    TextInput::make('judul')
                         ->label('Nama Mata Pelajaran')
                         ->required()
                         ->maxLength(255),
@@ -68,13 +68,13 @@ class ViewModules extends Page
                         ->maxFiles(1)
                         ->directory('matakuliah'),
 
-                    Textarea::make('description')
+                    Textarea::make('deskripsi')
                         ->label('Deskripsi')
                         ->rows(3),
 
-                    Select::make('department_id')
+                    Select::make('jurusan_id')
                         ->label('Jurusan')
-                        ->options(Departments::pluck('name', 'id'))
+                        ->options(Departments::pluck('nama_jurusan', 'id'))
                         ->searchable()
                         ->required(),
                 ])

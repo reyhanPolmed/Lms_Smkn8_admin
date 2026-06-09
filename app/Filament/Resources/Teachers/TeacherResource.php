@@ -21,7 +21,7 @@ class TeacherResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $recordTitleAttribute = 'nama';
 
     protected static ?string $navigationLabel = 'Guru';
     protected static ?string $modelLabel = 'Guru';

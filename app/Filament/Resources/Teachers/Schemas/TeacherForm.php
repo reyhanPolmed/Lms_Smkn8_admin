@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\Teachers\Schemas;
 
+use App\Models\Teacher;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use App\Models\Departments;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class TeacherForm
@@ -17,7 +18,7 @@ class TeacherForm
             // =====================
             // DATA GURU
             // =====================
-            TextInput::make('name')
+            TextInput::make('nama')
                 ->label('Nama Guru')
                 ->required()
                 ->maxLength(255)
@@ -34,7 +35,22 @@ class TeacherForm
                 ->maxLength(30)
                 ->placeholder('Contoh: 1234567890'),
 
-            FileUpload::make('photo')
+            TextInput::make('email')
+                ->label('Email Guru')
+                ->email()
+                ->required()
+                ->maxLength(255)
+                ->unique(
+                    table: 'teachers',
+                    column: 'email',
+                    ignoreRecord: true
+                )
+                ->rules([
+                    fn (?Teacher $record) => Rule::unique('users', 'email')->ignore($record?->user_id),
+                ])
+                ->placeholder('Contoh: guru@akara.sch.id'),
+
+            FileUpload::make('foto')
                 ->label('Gambar')
                 ->image()
                 ->required()
@@ -51,11 +67,19 @@ class TeacherForm
                     return $upload['secure_url'];
                 }),
 
-            Select::make('department_id')
+            Select::make('jurusan_id')
                 ->label('Jurusan')
-                ->options(Departments::pluck('name', 'id'))
+                ->options(fn () => Departments::query()
+                    ->orderBy('nama_jurusan')
+                    ->pluck('nama_jurusan', 'id')
+                    ->all())
                 ->searchable()
-                ->required(),
+                ->preload()
+                ->nullable()
+                ->required(fn (string $operation): bool => $operation !== 'create' || Departments::query()->exists())
+                ->helperText(fn (): ?string => Departments::query()->exists()
+                    ? null
+                    : 'Belum ada jurusan. Guru dapat dibuat dulu tanpa jurusan, lalu diperbarui setelah jurusan tersedia.'),
 
             // =====================
             // AKUN LOGIN GURU
@@ -65,10 +89,9 @@ class TeacherForm
                 ->password()
                 ->revealable()
                 ->dehydrated(fn($state) => filled($state)) // hanya kirim kalau diisi
-                ->required(false)
+                ->required(fn (string $operation): bool => $operation === 'create')
                 ->minLength(6)
-                ->afterStateHydrated(fn($component) => $component->state('')) // kosongkan saat edit
-                ->dehydrateStateUsing(fn($state) => Hash::make($state)),
+                ->afterStateHydrated(fn($component) => $component->state('')), // kosongkan saat edit
 
             TextInput::make('confirmPassword')
                 ->label('Konfirmasi Password')

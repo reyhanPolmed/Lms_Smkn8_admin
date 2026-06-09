@@ -46,8 +46,8 @@ class ManageModulesClasses extends Page
         $this->loadModules();
         $this->allTeachers = Teacher::all();
 
-        $this->name = $department->name;
-        $this->description = $department->description;
+        $this->name = $department->nama_jurusan;
+        $this->description = null;
     }
 
     private function loadModules(): void
@@ -56,7 +56,7 @@ class ManageModulesClasses extends Page
         $ids = (array) $this->tingkat;
 
         $this->allModules = Modules::query()
-            ->where('department_id', $this->department->id)
+            ->where('jurusan_id', $this->department->id)
 
             // 2. Logika Filter (Hanya jalan jika ada ?tingkat=...)
             ->when($this->tingkat, function ($q) use ($ids) {
@@ -89,8 +89,7 @@ class ManageModulesClasses extends Page
         ]);
 
         $this->department->update([
-            'name' => $this->name,
-            'description' => $this->description,
+            'nama_jurusan' => $this->name,
         ]);
 
         Notification::make()

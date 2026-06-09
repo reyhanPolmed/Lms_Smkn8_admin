@@ -1,3 +1,18 @@
+## Akara LMS Admin
+
+Filament admin ini memakai database PostgreSQL yang sama dengan backend Prisma.
+Set `DATABASE_URL` / `DB_URL` ke nilai yang sama dengan `backend/.env`, lalu pastikan PHP memuat ekstensi `pdo_pgsql` dan `pgsql`.
+
+Backend Prisma tetap menjadi pemilik utama schema database. Migration Laravel `2026_05_15_000000_sync_backend_prisma_schema_reference.php` hanya menjadi referensi/bootstrap untuk database PostgreSQL kosong dan akan skip jika tabel `users` sudah ada.
+
+Untuk akun panel lokal, jalankan:
+
+```bash
+php artisan db:seed --class=FilamentAdminSeeder
+```
+
+Email dan password default mengikuti `FILAMENT_ADMIN_EMAIL` dan `FILAMENT_ADMIN_PASSWORD` di `.env`.
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

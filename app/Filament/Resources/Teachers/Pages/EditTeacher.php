@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Teachers\Pages;
 
 use App\Filament\Resources\Teachers\TeacherResource;
+use App\Support\TeacherAuthCredentialSync;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Hash;
@@ -13,12 +14,17 @@ class EditTeacher extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        // Only update password if it's provided (not empty)
-        if (isset($data['password']) && !empty($data['password'])) {
-            $this->record->user->update([
-                'password' => Hash::make($data['password']),
-            ]);
-        }
+        $plainPassword = filled($data['password'] ?? null) ? $data['password'] : null;
+
+        $this->record->user->update([
+            'identifier' => $data['nip'],
+            'name' => $data['nama'],
+            'email' => $data['email'],
+            'email_verified' => true,
+            ...($plainPassword !== null ? ['password' => Hash::make($plainPassword)] : []),
+        ]);
+
+        TeacherAuthCredentialSync::sync($this->record->user->refresh(), $plainPassword);
 
         // Remove password fields from teacher data
         unset($data['password']);

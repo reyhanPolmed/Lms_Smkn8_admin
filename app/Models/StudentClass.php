@@ -2,33 +2,42 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\MapsLegacyAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StudentClass extends Model
 {
+    use MapsLegacyAttributes;
+
     protected $fillable = [
-        'name',
+        'nama_kelas',
+        'level',
         'homeroom_teacher_id',
+        'jurusan_id',
         'tingkat_id',
+        'name',
         'department_id',
+    ];
+
+    protected array $attributeAliases = [
+        'name' => 'nama_kelas',
+        'department_id' => 'jurusan_id',
     ];
 
     public function students(): HasMany
     {
-        return $this->hasMany(Student::class, 'class_level_id');
+        return $this->hasMany(Student::class, 'kelas_id');
     }
-    public function modules()
+
+    public function modules(): BelongsToMany
     {
-        return $this->belongsToMany(
-            \App\Models\Modules::class,
-            'modules_student_class',   // pivot table
-            'student_class_id',        // FK ke student_classes
-            'module_id'                // FK ke modules  ⭐ INI YANG PENTING
-        )
-            ->using(\App\Models\ModuleStudentClass::class)
-            ->withPivot('teacher_id');
+        return $this->belongsToMany(Modules::class, 'modules_student_class', 'student_class_id', 'module_id')
+            ->using(ModuleStudentClass::class)
+            ->withPivot(['id', 'teacher_id'])
+            ->withTimestamps();
     }
 
     public function homeroomTeacher(): BelongsTo
@@ -36,12 +45,12 @@ class StudentClass extends Model
         return $this->belongsTo(Teacher::class, 'homeroom_teacher_id');
     }
 
-    public function department()
+    public function department(): BelongsTo
     {
-        return $this->belongsTo(Departments::class, 'department_id');
+        return $this->belongsTo(Departments::class, 'jurusan_id');
+    }
 
-        }
-    public function tingkat()
+    public function tingkat(): BelongsTo
     {
         return $this->belongsTo(Tingkat::class, 'tingkat_id');
     }

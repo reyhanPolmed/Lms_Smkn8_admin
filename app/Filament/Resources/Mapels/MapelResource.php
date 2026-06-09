@@ -26,7 +26,7 @@ class MapelResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookOpen;
 
-    protected static ?string $recordTitleAttribute = 'Mata pelajaran';
+    protected static ?string $recordTitleAttribute = 'judul';
 
     protected static ?string $navigationLabel = 'Mata Pelajaran';
 

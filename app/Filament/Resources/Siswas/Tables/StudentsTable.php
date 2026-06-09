@@ -23,7 +23,7 @@ class StudentsTable
     {
         return $table
             ->columns([
-                ImageColumn::make('photo')
+                ImageColumn::make('foto')
                     ->label('Foto')
                     ->circular()
                     ->default('/images/placeholder-student.png'),
@@ -33,17 +33,17 @@ class StudentsTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('name')
+                TextColumn::make('nama')
                     ->label('Nama Siswa')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('department.name')
+                TextColumn::make('department.nama_jurusan')
                     ->label('Jurusan')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('student_class.name')
+                TextColumn::make('student_class.nama_kelas')
                     ->label('Kelas')
                     ->searchable()
                     ->sortable(),
@@ -66,9 +66,9 @@ class StudentsTable
             |--------------------------------------------------------------------------
             */
             ->filters([
-                \Filament\Tables\Filters\SelectFilter::make('class_level_id')
+                \Filament\Tables\Filters\SelectFilter::make('kelas_id')
                     ->label('Kelas')
-                    ->relationship('student_class', 'name')
+                    ->relationship('student_class', 'nama_kelas')
                     ->searchable()
                     ->preload(),
             ])
@@ -102,20 +102,20 @@ class StudentsTable
                         /*
                         ✅ Student class ikut filter halaman
                         */
-                        Forms\Components\Select::make('class_level_id')
+                        Forms\Components\Select::make('kelas_id')
                             ->label('Student Class')
                             ->options(function ($livewire) {
 
-                                $filterId = $livewire->tableFilters['class_level_id']['value'] ?? null;
+                                $filterId = $livewire->tableFilters['kelas_id']['value'] ?? null;
 
                                 if (!$filterId) {
-                                    return StudentClass::pluck('name', 'id');
+                                    return StudentClass::pluck('nama_kelas', 'id');
                                 }
 
-                                $departmentId = StudentClass::find($filterId)?->department_id;
+                                $departmentId = StudentClass::find($filterId)?->jurusan_id;
 
-                                return StudentClass::where('department_id', $departmentId)
-                                    ->pluck('name', 'id');
+                                return StudentClass::where('jurusan_id', $departmentId)
+                                    ->pluck('nama_kelas', 'id');
                             })
                             ->searchable()
                             ->preload()

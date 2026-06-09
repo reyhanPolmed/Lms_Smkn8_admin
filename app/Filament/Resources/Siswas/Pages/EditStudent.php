@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Siswas\Pages;
 
 use App\Filament\Resources\Siswas\StudentResource;
-use App\Models\User;
+use App\Support\TeacherAuthCredentialSync;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,12 +13,18 @@ class EditStudent extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        // Update user password if provided
-        if (!empty($data['password'])) {
-            $this->record->user->update([
-                'password' => Hash::make($data['password']),
-            ]);
-        }
+        $plainPassword = filled($data['password'] ?? null) ? $data['password'] : null;
+
+        $this->record->user->update([
+            'identifier' => $data['nisn'],
+            'name' => $data['nama'],
+            'email' => $data['email'],
+            'email_verified' => true,
+            'nisn' => $data['nisn'],
+            ...($plainPassword !== null ? ['password' => Hash::make($plainPassword)] : []),
+        ]);
+
+        TeacherAuthCredentialSync::sync($this->record->user->refresh(), $plainPassword);
 
         // Remove password and confirmPassword from student data
         unset($data['password']);

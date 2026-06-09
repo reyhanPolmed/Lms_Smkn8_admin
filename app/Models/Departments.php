@@ -2,46 +2,60 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\MapsLegacyAttributes;
 use Illuminate\Database\Eloquent\Model;
-class Departments extends Model
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+class Departments extends Model
 {
+    use MapsLegacyAttributes;
+
+    protected $table = 'departments';
 
     protected $fillable = [
+        'nama_jurusan',
+        'gambar',
+        'kepala_jurusan_id',
         'name',
         'image',
         'head_department_id',
     ];
 
-    public function modules()
+    protected array $attributeAliases = [
+        'name' => 'nama_jurusan',
+        'image' => 'gambar',
+        'head_department_id' => 'kepala_jurusan_id',
+        'head_of_department_id' => 'kepala_jurusan_id',
+    ];
+
+    public function modules(): HasMany
     {
-        return $this->hasMany(Modules::class, 'department_id');
+        return $this->hasMany(Modules::class, 'jurusan_id');
     }
 
-    public function student_classes()
+    public function student_classes(): HasMany
     {
-        return $this->hasMany(StudentClass::class, 'department_id');
+        return $this->hasMany(StudentClass::class, 'jurusan_id');
     }
 
-    public function headOfDepartment()
+    public function studentClasses(): HasMany
     {
-        return $this->belongsTo(Teacher::class, 'head_department_id');
+        return $this->student_classes();
     }
 
-    public function teachers()
+    public function headOfDepartment(): BelongsTo
     {
-        return $this->hasManyThrough(
-            Teacher::class,
-            Modules::class,
-            'department_id', // FK di modules
-            'id',            // FK di teachers (sementara)
-            'id',
-            'id'
-        );
+        return $this->belongsTo(Teacher::class, 'kepala_jurusan_id');
     }
 
-    public function students()
+    public function teachers(): HasMany
     {
-        return $this->hasMany(Student::class, 'department_id');
+        return $this->hasMany(Teacher::class, 'jurusan_id');
+    }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class, 'jurusan_id');
     }
 }

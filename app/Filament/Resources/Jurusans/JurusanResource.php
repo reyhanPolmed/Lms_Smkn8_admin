@@ -25,7 +25,7 @@ class JurusanResource extends Resource
     protected static ?string $navigationLabel = 'Jurusan';
     protected static ?string $modelLabel = 'Jurusan';
     protected static ?string $pluralModelLabel = 'Jurusan';
-    protected static ?string $recordTitleAttribute = 'Jurusan';
+    protected static ?string $recordTitleAttribute = 'nama_jurusan';
 
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Akademik';
 
